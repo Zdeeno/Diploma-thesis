@@ -1,0 +1,108 @@
+\usepackage{latexsym}
+\usepackage{a4wide}
+\usepackage{color} 
+\usepackage{indentfirst}
+\usepackage{graphicx}       %%% graphics for dvips
+\usepackage{fancyhdr}
+\usepackage{longtable}
+\usepackage{pifont}
+\usepackage{makeidx}
+\usepackage{lastpage}
+\usepackage{multirow}
+\usepackage{dcolumn} 
+\usepackage{epstopdf}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{relsize}
+\usepackage{pdfpages}
+\usepackage{url}
+\usepackage{algpseudocode}% http://ctan.org/pkg/algorithmicx
+\algtext*{EndWhile}% Remove "end while" text
+\algtext*{EndIf}% Remove "end if" text
+\algtext*{EndFunction}% Remove "end if" text
+
+\lstset{breaklines=true,captionpos=b,frame=single,language=sh,float=h}
+\lstloadlanguages{sh,c}
+\def\lstlistingname{Listing}%{Výpis}
+\def\lstlistlistingname{Listings}%{Seznam výpisů}
+
+% European layout (no extra space after `.')
+\frenchspacing
+
+% no indent, free space between paragraphs
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\usepackage{ifthen} %%% package for conditionals in TeX
+\newread\testin
+\def\softinput #1 {\let\next=\relax \openin\testin=#1
+\ifeof\testin \message{Info: the file #1 does not exist}%
+\else \closein\testin \def\next{\input #1 }\fi
+\next}
+
+\softinput{makeconfig}
+
+\ifx\clinks\undefined
+\def\clinks{true}
+\fi
+
+\ifx\pdfoutput\undefined %%% LATEX %%%
+\def\nothtml{}  %%% \nothtml is defined if not processed with latex2html
+%\usepackage[dvips]{graphicx}       %%% graphics for dvips
+\usepackage[                %%% hyper-references for ps2pdf
+bookmarks=true,%                   %%% generate bookmarks ...
+breaklinks=true,%                  %%% breaks lines, but links are very small
+hypertexnames=false,%              %%% needed for correct links to figures
+colorlinks=\clinks,%
+urlcolor=blue
+]{hyperref}           %%% blue instead of cyan URLS
+\hypersetup{
+pdfcreator  = {LaTeX with hyperref package},
+pdfproducer = {dvips + ps2pdf},
+}
+\else %%% PDFLATEX %%%
+\def\nothtml{}  %%% \nothtml is defined if not processed with latex2html
+%\usepackage[pdftex]{graphicx}        %%% graphics for pdfLaTeX
+\usepackage[              %%% hyper-references for pdflatex
+bookmarks=true,%                   %%% generate bookmarks ...
+hypertexnames=false,%              %%% needed for correct links to figures
+breaklinks=true,%                  %%% break links if exceeding a single line
+colorlinks={\clinks},%
+urlcolor=blue]{hyperref}           %%% blue instead of cyan URLS
+\pdfadjustspacing=1                %%% force LaTeX-like character spacing
+\fi
+
+\hypersetup{  
+pdfauthor={\Author},
+pdftitle={\Title - \Acronym},
+pdfsubject={\Subject},
+pdfkeywords={\Keywords}
+}
+
+\def\BackgroundEPS#1#2#3#4{%
+\special{ps: @beginspecial @setspecial initmatrix
+0.1 setgray #2 #3 translate #4 dup scale}
+\special{ps: plotfile #1}
+\special{ps: @endspecial}
+}
+
+% \pagestyle{fancy}
+\setlength{\headheight}{18pt}
+
+%\lfoot{ČVUT FEL, Katedra Kybernetiky, Gerstner Laboratory}
+\cfoot{}
+%\rfoot{\thepage$/$\pageref{LastPage}}
+
+\fancypagestyle{plain}
+
+% \fancyhead[R]{}
+
+\newcommand{\DocBegin}{
+\ifx\glreport\undefined
+\else
+\input{../common/glreport}
+\fi
+}
+

@@ -1,0 +1,128 @@
+\pdfoutput=1
+\documentclass[a4paper,12pt,titlepage, twoside]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb,amsmath}
+\usepackage{algorithm,algpseudocode}
+\usepackage[title,titletoc]{appendix}
+\usepackage{natbib}
+\usepackage{siunitx}
+\usepackage{textcomp}
+\usepackage[symbol]{footmisc}
+\usepackage{booktabs}
+
+
+\newcommand{\Author}{Zdeněk Rozsypálek}
+\newcommand{\Title}{Brick Detection for MBZIRC Competition}
+\newcommand{\Acronym}{Acronym}
+\newcommand{\WorkPackage}{WorkPackage}
+\newcommand{\DocName}{Thesis}
+\newcommand{\Subject}{\WorkPackage - \DocName}
+\newcommand{\Keywords}{mobile robotics}
+\newcommand{\Date}{1/1/2020}
+\newcommand{\DOCVersion}{0.1}
+\newcommand{\jed}[1]{\ensuremath{~\mathrm{#1}}} %příkaz pro sazbu fyzikálních jednotek
+
+\def\clinks{false}
+
+\input{chapters/doc_head}
+\renewcommand{\lstlistlistingname}{List of Algorithms}
+\renewcommand{\lstlistingname}{Listing}
+\definecolor{background_color}{rgb}{1.0, 1.0, 0.85}
+\definecolor{comment_color}{rgb}{0.0, 0.5, 0.0}
+\definecolor{keyword_color}{rgb}{0.0, 0.0, 1.0}
+\definecolor{string_color}{rgb}{0.8, 0.0, 0.0}
+\lstset{language=ksh}
+\lstset{backgroundcolor=\color{background_color}}
+\lstset{frameround=tttt}
+\lstset{columns=fullflexible}
+\lstset{keywordstyle=\color{keyword_color}\bfseries}
+\lstset{commentstyle=\color{comment_color}}
+\lstset{stringstyle=\color{string_color}}
+\lstset{basicstyle=\ttfamily}
+\lstset{showstringspaces=false}
+\lstset{frame=single}
+\lstset{keepspaces=true}
+\lstset{tabsize=4}
+\lstset{breaklines=true}
+\lstset{captionpos=b}
+
+\begin{document}
+\DocBegin
+%% Asymetric margins
+%% LEAVE ONLY IN THE PRINTED VERSION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+%% the electronic version should have symetric margins
+%\setlength{\oddsidemargin}{+0.5cm} 
+%\setlength{\evensidemargin}{-0.5cm}
+%%
+
+% Titulní stránka
+\input{chapters/title}
+\pagestyle{empty}
+\cleardoublepage
+
+\includepdf[pages={1}]{acknowledgement.pdf}
+\cleardoublepage
+
+\includepdf[pages={1}]{zav_prace.pdf}
+\cleardoublepage
+
+\input{chapters/acknowledgement}
+\cleardoublepage % it is prefered for the 1. level sections to start on the 
+
+\input{chapters/abstract_en}
+\input{chapters/abstract_cz}
+\cleardoublepage
+
+\pagenumbering{roman}
+\cfoot{\thepage}
+
+\tableofcontents
+\cleardoublepage
+
+\listoffigures
+\cleardoublepage
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\pagenumbering{arabic}
+\cfoot{}
+\fancyfoot[RO,RE]{\thepage$/$\pageref{LastPage}}
+\setlength{\parskip}{0.35cm}
+
+\fancyhead[LO,LE]{INTRODUCTION}
+\input{chapters/introduction}
+\clearpage
+
+\fancyhead[LO,LE]{CONTEST}
+\input{chapters/contest}
+\clearpage
+
+\fancyhead[LO,LE]{METHODS}
+\input{chapters/methods}
+\clearpage
+
+\fancyhead[LO,LE]{EXPERIMENT}
+\input{chapters/experiment}
+\clearpage
+
+\fancyhead[LO,LE]{CONCLUSION}
+\input{chapters/conclusion}
+\cleardoublepage
+
+\fancyhead[LO,LE]{LIST OF REFERENCES}
+% the list of all literature should be supplied in main.bib
+\bibliographystyle{unsrt}
+\bibliography{main}{}
+\clearpage
+
+\appendices
+\fancyhead[LO,LE]{APPENDIX}
+\input{chapters/cd_content}
+\cleardoublepage
+
+\input{chapters/list_of_abbreviations}
+\cleardoublepage
+
+\end{document}
