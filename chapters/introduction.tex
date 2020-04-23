@@ -28,7 +28,7 @@ Each brick has thin metal plate on top of it, so that the robots are able to pic
 
 \end{figure}
 
-Another objects of interest are destinations where the bricks should be placed. The robots must during the exploration look for them too. UGV bricks destination is marked by checker pattern. It is necessary to mention that the form of the pattern was not known till the second rehersal. The final form of the pattern is shown in the figure \ref{fig:checker}. Although we are not concerned about the UAV bricks, the destination of the UAV bricks is a vertical object, so it is much easier to detect it from the ground using the lidar. The UAV brick destination is basically a wall as can be seen in the picture \ref{fig:uavdest}. Bricks should be placed on top of this wall. The metal plates on top of each brick shift the center of mass to the top and make the brick very susceptible to rolling. That is why are on the top of UAV destination auxiliary handles to help place the bricks properly. At the beginning of the challenge is each team given the instructions which describe how the wall should look like at the end. When the built wall does not fit the instructions, the team gets penalty and gains less points for inaccurately placed bricks.
+Another objects of interest are destinations where the bricks should be placed. The robots must during the exploration look for them too. UGV bricks destination is marked by checker pattern. Detecting pattern was very challenging because exact shape was not know till second rehersal. The final form of the pattern is shown in the figure \ref{fig:checker}. Although we are not concerned about the UAV bricks, the destination of the UAV bricks is a vertical object, so it is much easier to detect it from the ground using the lidar. The UAV brick destination is basically a wall as can be seen in the picture \ref{fig:uavdest}. Bricks should be placed on top of this wall. The metal plates on top of each brick shift the center of mass to the top and make the brick very susceptible to rolling. That is why are on the top of UAV destination auxiliary handles to help place the bricks properly. At the beginning of the challenge is each team given the instructions which describe how the wall should look like at the end. When the built wall does not fit the instructions, the team gets penalty and gains less points for inaccurately placed bricks.
 
 
 \begin{figure}[H]
@@ -48,7 +48,7 @@ Another objects of interest are destinations where the bricks should be placed. 
 \label{fig:uavdest}
 \end{subfigure}
 
-\caption[Brick destinations]{Description of target places for UAVs and UGVs. Each square on the UGV pattern has $10$cm. Pattern consists of two $4\times0.4$ meter segments which are connected into the \textit{L} shape. Whole UAV destination consists of five similar segments arranged into the \textit{M} shape with right angles.}
+\caption[Brick destinations]{Description of target places for UAVs and UGVs. Each square in the UGV pattern has $10$cm. Pattern consists of two $4\times0.4$ meter segments which are connected into the \textit{L} shape. Whole UAV destination consists of five similar segments arranged into the \textit{M} shape with right angles.}
 \label{fig:dest}
 \end{figure}
 
@@ -57,7 +57,6 @@ Another objects of interest are destinations where the bricks should be placed. 
 For the sake of completeness is necessary to describe what exact equipment was available. We used \textbf{Clearpath Husky A200} which is wheeled robot designed for outside robotics. The robot is equipped with many additional devices. As a computer running all code controlling the robot is used \textbf{Intel NUC}. To manipulate the bricks we mounted \textbf{Kinova robotic arm} on top of the Husky robot. Two \textbf{12V electromagnets} are attached to the end-effector to enable the arm to grip the bricks. It would be very hard to grip the bricks without any feedback loop to the hand. For visual servoing and proper gripping we placed \textbf{Intel Realsense} camera close to the end of the arm. It is also possible to obtain feedback from electromagnets thanks to hall effect sensors and decide whether the brick is gripped correctly. For the localization, collision avoidance and detection is used \textbf{Velodyne VLP-16} lidar sensor. Lastly for the moving the bricks around the arena we created a handmade cargo area which can contain up to six bricks and attached it to the rear bumber. Whole setup is captured in the figure \ref{fig:husky}.
 
 \begin{figure}[H]
-
 \centering
 \includegraphics[scale=0.3]{fig/husky.png}
 \caption[UGV robot setup]{Clearpath Husky A200 adjusted for the second challenge.}
@@ -66,3 +65,7 @@ For the sake of completeness is necessary to describe what exact equipment was a
 \end{figure}
 
 \subsection{Velodyne VLP-16}
+This thesis deals mainly with lidar data so following subsection will provide more detailed description of lidar sensor. Inside the VLP-16 puck is rotating class one infrared laser which measures the distance using the time of flight principle. Lidar provides 16 layers of laser scans with vertical field of view $\pm 20 \degree$. That gives vertical resolution of $2 \degree$. Horizontal field of view is $360 \degree$ with maximal resolution of $0.1 \degree$ and $5$Hz frequency. Sensor has for our purposes sufficient precision of $\pm 3$cm. Lidar is powered by 12V power supply and the data are transferred via UDP packets over the ethernet.
+
+
+\section{STH ABOUT ROS???}

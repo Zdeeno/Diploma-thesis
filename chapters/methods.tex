@@ -1,2 +1,35 @@
-\section{Algorithms}
-BLAH BLAH BLAH
+\section{Lidar data processing}
+
+To detect individual bricks would be handy to extract straight lines from lidar data. Several methods can be used to achieve this goal. One of the most popular algorithms for lines extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. Simple version of this algorithm for pointcloud processing is described in algorthm \ref{alg:segmentation}. There are many implementations of this algorithm which differs mainly in a way how they compute some particular steps of the algorithm. For example just the method of fitting a line to cluster can vary a lot. Very often is used the least squares method, but as simple method as connecting endpoints of cluster could be used. When the latter method is applied - algorithm is usually refered as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation are the points iterated in each layer one by one. When the distance of subsequent points is too high we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In a comparison of many line extraction algorithms was the split and merge algorithm one of the best performing in terms of precision and computational complexity \cite{nguyen2006}.
+\begin{algorithm}[]
+ \KwData{pointcloud}
+ \KwResult{line\_segments}
+initialize constants C, S\;
+  clusters = find\_clusters(pointcloud, C)\;
+\While{clusters is not empty}{
+	cluster = clusters.pop()\;
+	line = fit\_line(cluster)\;
+	point = most\_distant\_point(cluster, line)\;
+	\eIf{distance(point, line) $>$ S}{
+	   c1, c2 = split\_cluster(cluster, point)\;
+		clusters.push\_back(c1, c2)\;
+	}{
+		line\_segments.push\_back(cluster[start], cluster[end])\;	
+	}
+}
+merge\_colinear(line\_segments)\;
+ 
+ \caption{Lidar data segmentation using split and merge algorithm. C is clustering distance and S is splitting distance.}
+ \label{alg:segmentation}
+\end{algorithm}
+
+
+\section{EM algorithm}
+
+\section{RANSAC}
+
+\subsection{Correspondences}
+
+\section{Lidar to camera registration}
+
+\section{Global model and transformations}
