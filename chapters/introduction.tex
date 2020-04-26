@@ -65,7 +65,24 @@ For the sake of completeness is necessary to describe what exact equipment was a
 \end{figure}
 
 \subsection{Velodyne VLP-16}
-This thesis deals mainly with lidar data so following subsection will provide more detailed description of lidar sensor. Inside the VLP-16 puck is rotating class one infrared laser which measures the distance using the time of flight principle. Lidar provides 16 layers of laser scans with vertical field of view $\pm 20 \degree$. That gives vertical resolution of $2 \degree$. Horizontal field of view is $360 \degree$ with maximal resolution of $0.1 \degree$ and $5$Hz frequency. Sensor has for our purposes sufficient precision of $\pm 3$cm. Lidar is powered by 12V power supply and the data are transferred via UDP packets over the ethernet.
+This thesis deals mainly with lidar data so following subsection will provide more detailed description of lidar sensor. Inside the VLP-16 puck is rotating class one infrared laser which measures the distance using the time of flight principle. Lidar is powered by 12V power supply and the data are transferred via UDP packets over the ethernet. Parameters of the Velodyne lidar are listed in the table \ref{tab:lidar}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+Layers                            & 16   \\ \hline
+Range (m)                         & 100  \\ \hline
+Vertical FOV ($\degree$)          & $\pm20$   \\ \hline
+Vertical resolution ($\degree$)   & 2    \\ \hline
+Horizontal FOV ($\degree$)        & 360  \\ \hline
+Horizontal resolution ($\degree$) & 0.1  \\ \hline
+Frequency (Hz)                    & 5    \\ \hline
+Precision (m)                     & $\pm0.03$ \\ \hline
+\end{tabular}
+\caption{Parameters of VLP-16 lidar sensor.}
+\label{tab:lidar}
+\end{table}
 
 
 \section{STH ABOUT ROS???}

@@ -1,6 +1,6 @@
 \section{Lidar data processing}
 
-To detect individual bricks would be handy to extract straight lines from lidar data. Several methods can be used to achieve this goal. One of the most popular algorithms for lines extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. Simple version of this algorithm for pointcloud processing is described in algorthm \ref{alg:segmentation}. There are many implementations of this algorithm which differs mainly in a way how they compute some particular steps of the algorithm. For example just the method of fitting a line to cluster can vary a lot. Very often is used the least squares method, but as simple method as connecting endpoints of cluster could be used. When the latter method is applied - algorithm is usually refered as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation are the points iterated in each layer one by one. When the distance of subsequent points is too high we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In a comparison to other line extraction algorithms is the split and merge algorithm one of the best performing in terms of precision and computational complexity \cite{nguyen2006}.
+To detect individual bricks would be handy to extract straight lines from lidar data. Several methods can be used to achieve this goal. One of the most popular algorithms for lines extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. Simple version of this algorithm for pointcloud processing is described in algorthm \ref{alg:segmentation}. There are many implementations of this algorithm which differs mainly in a way how they compute some particular steps of the algorithm. For example just the method of fitting a line to cluster can vary a lot. Very often is used the least squares method, but as simple method as connecting endpoints of cluster could be used. When the latter method is applied, algorithm is usually refered as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation are the points iterated in each layer one by one. When the distance of subsequent points is too high we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In a comparison to other line extraction algorithms is the split and merge algorithm one of the best performing in terms of precision and computational complexity \cite{nguyen2006}.
 \begin{algorithm}[]
  \KwData{pointcloud}
  \KwResult{line\_segments}
@@ -41,7 +41,7 @@ The most important assumption for the usage of the algorithm is that its likelih
 \begin{align}
 \mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma) \\
 \frac{\partial \log \mathcal{L}}{\partial \mu} &= \frac{1}{\sigma^2} \sum_{n = 1}^{N} (x_n - \mu) \\
-\frac{\partial^2 \log \mathcal{L}}{\partial \mu^2} &= -N.
+\frac{\partial^2 \log \mathcal{L}}{\partial \mu^2} &= \frac{-N}{\sigma^2}.
 \end{align}
 
 \subsection{Expectation}
@@ -114,6 +114,52 @@ y\\
 z
 \end{bmatrix}.
 \end{equation}
-Using this matrix equality is possible to decide which coordinates $u,v$ on image plane corresponds to 3D point $x,y,z$ from pointcloud. However this works only for the simplest pinhole camera model without any distortion of image. If the lens has non-negligible distortion, this distortion must be included in the camera model. For description of distortion are used the distortion coefficients.
+Using this matrix equality is possible to decide which coordinates $u,v$ on image plane corresponds to 3D point $x,y,z$ from pointcloud and assign color of a certain pixel to the point. However this works only for the simplest pinhole camera model without any distortion of image. If the lens has non-negligible distortion, this distortion must be included in the camera model. For description of distortion are used the distortion coefficients.
 
 \section{Global model and transformations}
+One of the goals of this thesis is develop a global model which can efficiently store and update the positions of interest points. This global model is in the map coordinate frame. The localization of the robot is absolutely essential for precise global model. Every detection must be transformed from the coordinate frame of the sensor to coordinate frame of the map. Transformation can be easily done using matrix multiplication:
+\begin{equation}
+\begin{bmatrix}
+x^\prime \\
+y^\prime \\
+z^\prime 
+\end{bmatrix}
+=
+R \begin{bmatrix}
+x \\
+y \\
+z
+\end{bmatrix}
++ t,
+\end{equation}
+where $R$ is $3\times3$ the rotation matrix and $t$ is a $1\times3$ translation vector between coordinate frames. Similarly can be the transformation done in homogenous coordinates by merging translation and rotation into one matrix $T$:
+\begin{equation}
+\begin{bmatrix}
+x^\prime \\
+y^\prime \\
+z^\prime \\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+ & & & \\
+ & R & & t \\
+ & & & \\
+ 0 & 0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+z \\
+1
+\end{bmatrix}.
+\end{equation}
+
+Different framework for computing the transformations is using a quaternions. The quaternions are currently the standard for transformations in computer graphics and robotics. The biggest advantage of quaternions is that they are more efficient and does not suffer from gymbal lock and ambiguity of rotation. Arbitrary rotation and scaling can be expressed as quadruple of numbers in quaternion framework. The rotation between coordinate frames $B \to A$ is computed with quaternions as:
+\begin{equation}
+q_A = q_T q_B q_T^*,
+\end{equation}
+where $q_A$ is quaternion in coordinate frame $A$, $q_B$ is quaternion in coordinate frame $B$, $q_T$ is quaternion representing the transformation between these coordinate frames and $q_T^*$ is its conjugate. There is available a library within the ROS which can handle all these transformations in different forms \cite{tf}. 
+
+\subsection{Symbolic map}
+When are all detections transformed into the map frame we can add them into a symbolic map. The symbolic map is storing the positions of all interest points and makes up the global model of the arena. Every object added to symbolic map has a float number which indicates confidence of detection. When there is a new detection within certain range from an object already stored in the symbolic map, new object is not added but only the confidence is increased. This approach creates a clusters of interest points of different types. All interest points can be polled from symbolic map and robot can make decisions based on confidence of such an interest point. (CITACE)
