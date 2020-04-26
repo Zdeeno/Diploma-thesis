@@ -17,7 +17,7 @@ initialize constants C, S\;
 		line\_segments.push\_back(cluster[start], cluster[end])\;	
 	}
 }
-merge\_colinear(line\_segments)\;
+merge\_parallel(line\_segments)\;
  
  \caption{Lidar data segmentation using split and merge algorithm. C is clustering distance and S is splitting distance.}
  \label{alg:segmentation}
@@ -85,7 +85,7 @@ Random sample consensus (RANSAC) is an iterative method which can estimate param
  \label{alg:ransac}
 \end{algorithm}
 
-Number of drawn samples in \textbf{draw\_samples} must be equal or higher than the number of degrees of freedom of the hypothesis. After drawing the samples method \textbf{find\_parameters} assigns the correspondences between sampled data and the hypothesis. The correspondences are used to obtain the parameters of the hypothesis. Then is the algorithm evaluating quality of the hypothesis by applying the hypothesis to whole dataset. This can be done by arbitrary cost function. Common practice is to define some metrics in our domain and use a threshold value to obtain the number of samples which fits the hypothesis. These samples are often referred as inliers. Stopping criterion is usually met when the probability of sampling better hypothesis is lower than a specified threshold. This section describes just the basic version of the algorithm. Many improvements to RANSAC algorithm was proposed since 1981 such as \cite{chum2003} or \cite{chum2008}.
+Number of drawn samples in \textbf{draw\_samples} must be equal or higher than the number of degrees of freedom of the hypothesis. After drawing the samples method \textbf{find\_parameters} assigns the correspondences between sampled data and the hypothesis. The correspondences are used to obtain the parameters of the hypothesis. Then is the algorithm evaluating quality of the hypothesis by applying the hypothesis to whole dataset. This can be done by arbitrary cost function. Common practice is to define some metrics in our domain and use a threshold value to obtain the number of samples which fits the hypothesis. These samples are often referred as inliers. Stopping criterion is usually met when the probability of sampling better hypothesis is lower than a specified threshold. This section describes just the basic version of the algorithm. Many improvements to RANSAC algorithm was proposed since 1981 \cite{chum2008}.
 
 \subsection{Tentative Correspondences}
 The tentative correspondences can help us to choose better samples from the data to generate the better hypothesis. It is necessary to define some function witch measure the similarity between data and  hypothesis. The data which has higher similarity to the hypothesis are then chosen with higher probability. It is also possible to completely ban correspondences with low similarity. Given the typical application in scene analysis is similarity usually computed by comparing keypoint descriptors.
