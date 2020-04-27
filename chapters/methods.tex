@@ -37,7 +37,7 @@ For maximization step is used maximal likelihood estimate weighted by $\alpha$ f
 \sigma = \frac{1}{N} \sum_{n = 1}^{N}\alpha_n (x_n - \mu)^2.
 \end{equation}
 
-The most important assumption for the usage of the algorithm is that its likelihood with respect to estimated parameter must be concave. This can be easily proved by computing the second derivative of likelihood function. For example for mean value $\mu$ it is easy to show that second derivative of likelihood is always negative.
+Very important assumption for the convergence of the algorithm is that its likelihood with respect to estimated parameter must be concave. This can be easily proved by computing the second derivative of likelihood function. For example for mean value $\mu$ it is easy to show that second derivative of likelihood is always negative which means that the function has no local optima.
 \begin{align}
 \mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma) \\
 \frac{\partial \log \mathcal{L}}{\partial \mu} &= \frac{1}{\sigma^2} \sum_{n = 1}^{N} (x_n - \mu) \\
@@ -49,7 +49,7 @@ The expectation step is done simply by evaluating probability density function o
 \begin{equation}
 \alpha_n = \mathcal{N}(x_n, \mu, \sigma),
 \end{equation}
-where n is index of the data sample. If the prior probabilities of observed random variable are known, it is also possible to exploit the Bayes theorem to compute $\alpha$.
+where n is index of the data sample. If there are more classes (mixture models), it is necessary to use the Bayes theorem to compute $\alpha$.
 
 \subsection{Algorithm}
 How to implement general version of EM algorithm on sampled data is shown in algorithm \ref{alg:em}. All important calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step so during the initialization we set $\alpha_n = 1$. If some prior information about parameters of the model is available, they can be set during the initialization and the algorithm can be started with expectation step. This informed initialization can highly reduce the number of iterations and sometimes even an outcome of the algorithm.
@@ -162,4 +162,4 @@ q_A = q_T q_B q_T^*,
 where $q_A$ is quaternion in coordinate frame $A$, $q_B$ is quaternion in coordinate frame $B$, $q_T$ is quaternion representing the transformation between these coordinate frames and $q_T^*$ is its conjugate. There is available a library within the ROS which can handle all these transformations in different forms \cite{tf}. 
 
 \subsection{Symbolic map}
-When are all detections transformed into the map frame we can add them into a symbolic map. The symbolic map is storing the positions of all interest points and makes up the global model of the arena. Every object added to symbolic map has a float number which indicates confidence of detection. When there is a new detection within certain range from an object already stored in the symbolic map, new object is not added but only the confidence is increased. This approach creates a clusters of interest points of different types. All interest points can be polled from symbolic map and robot can make decisions based on confidence of such an interest point. (CITACE)
+When are all detections transformed into the map frame we can add them into a symbolic map. The symbolic map is storing the positions of all interest points and makes up the global model of the arena. Every object added to symbolic map has a float number which indicates confidence of detection. When there is a new detection within certain range from an object already stored in the symbolic map, new object is not added but only the confidence is increased. This approach creates a clusters of interest points of different types. All interest points can be polled from the symbolic map and robot can make decisions based on confidence of such an interest point. The symbolic map also checks whether the inserted object is located inside the arena otherwise is the object rejected. (CITACE)
