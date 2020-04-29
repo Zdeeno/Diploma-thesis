@@ -85,8 +85,4 @@ Precision (m)                     & $\pm0.03$ \\ \hline
 \end{table}
 
 \subsection{Software}
-BLAH BLAH BLAH
-
-
-\section{STH ABOUT ROS???}
-BLAH BLAH BLAH
+Operation system of the Intel NUC is Ubuntu 18.04. All important subroutines for controlling the robot are run by Robot Operating System (ROS) \cite{ros}. For localization is used particle filter from ROS AMCL package. Particle filter is Monte Carlo method for localization on a known map and it is particularly useful for sensor fusion. In our case is AMCL fusing odometry data and lidar measurements to estimate the robot position in the map.
