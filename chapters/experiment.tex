@@ -108,7 +108,7 @@ When these conditions are met then the hypothesis is declared as pile and pushed
 Ah shown in the figure \ref{fig:flowchart} the last step of detection pipeline is pattern fitting. It is also visible that there are two types of input into this last step. Each input is used for different type of pattern fitting. In previous two sections it was described how to generate candidates with different levels of confidence. This section describes how the candidates can be used for generating actual positions and how information about the spatial distribution of bricks can be exploited for the detection. From figure \ref{fig:piledef} is known exact position of each pile and even each brick. Pattern in which are bricks stacked has three degrees of freedom - position $(x, y)$ and rotation $\phi$. Goal of the pattern fitting is to find values of these parameters in the map frame.
 
 \subsection{Brick fitting}
-This part of fitting is using detected 3D positions of individual bricks obtained in pile detector. In the pattern is described position of each brick which can be detected by lidar sensor. Next step is to generate hypothesis which align this pattern with the measured positions of bricks. For this step is utilized the RANSAC algorithm. Firstly we draw two different bricks from detected set of bricks. Secondly the correspondences are used to find the transformation - two correspondences are enough to generate the hypothesis (rotation matrix $R$ and translation vector $t$). The brick types (colors) and brick $z$ positions are used as the correspondences. Also we know that the distance between corresponding pairs should match, otherwise it would be incorrect correspondence. Lastly we measure the cost of the hypothesis. When the bricks are stacked into the pattern with a reasonable precision, it is possible to fit the pile with average brick error down to $\pm 3$cm. After such a observation we set the inlier distance to $5$cm. Algorithm is stopped after certain number of iterations. The result is passed only if all detected bricks are inliers.
+The first type of fitting is using detected 3D positions of individual bricks obtained in pile detector. In the pattern is described position of each brick which can be detected by lidar sensor. Next step is to generate hypothesis which align this pattern with the measured positions of bricks. For this step is utilized the RANSAC algorithm. Firstly we draw two different bricks from detected set of bricks. Secondly the correspondences are used to find the transformation - two correspondences are enough to generate the hypothesis (rotation matrix $R$ and translation vector $t$). The brick types (colors) and brick $z$ positions are used as the correspondences. Also we know that the distance between corresponding pairs should match, otherwise it would be incorrect correspondence. Lastly we measure the cost of the hypothesis. When the bricks are stacked into the pattern with a reasonable precision, it is possible to fit the pile with average brick error down to $\pm 3$cm. After such a observation we set the inlier distance to $5$cm. Algorithm is stopped after certain number of iterations. The result is passed only if all detected bricks are inliers.
 
 \subsubsection{Hypothesis ambiguity}
 It is obvious that we cannot properly test the hypothesis when there are not enough bricks found. In addition we can see the pile from behind which renders a two different patterns to match. For this reason is required at least five detected red bricks to even start the brick fitting. As shown in the figure \ref{fig:ambiguity} even with four detected red bricks can be hypothesis easily fitted incorrectly. All conditions which can start fitting the hypothesis from front view are listed bellow:
@@ -126,5 +126,37 @@ For view from behind is sufficient only the last condition.
 \end{figure}
 
 \subsection{Cluster fitting}
+The second type of fitting polls clusters from symbolic map and utilizes their confidence and spatial distribution. For RANSAC algorithm would be hypothesis using only four clusters too sparse to fit reliably. Because of this reason is the cluster fitting done by the EM algorithm. As in pile detection is used multivariete Gaussian distribution to represent the pile but this time the model takes in account relationships between positions of the piles. We define the probability model as follows:
+\begin{equation}
+P(\vec{x}_m) = \mathcal{N}_m(\vec{x}_m; \vec{\mu} + k_m\vec{v}; \bm{\Sigma}),
+\end{equation}
+where $m$ is pile (color index) and $M$ is absolute number of colors, $\vec{_mx}$ is measurement of color $m$, $\vec{\mu}$ is mean value of whole model, $\bm{\Sigma_m}$ is covariance matrix, $k_m$ is scalar multiplier unique for each pile and $\vec{v}$ is defined as:
+\begin{equation}
+\vec{v} = \begin{bmatrix}
+\cos \phi \\
+\sin \phi
+\end{bmatrix},
+\end{equation}
+where $\phi$ is rotation of model. This definition of model ensures that all piles (Gaussians) are in the line with distance defined by multiplier $k$. Now we want to obtain the position and rotation of such a model based on real measurements. There is a closed form solution for maximizing both terms which can be found using maximum likelihood estimate. For mean value is derivation very similar to simple Gaussian:
+\begin{align}
+\frac{\partial \log\mathcal{L} }{\partial \vec{\mu}} &= \sum_{m=1}^M \bm{\Sigma}^{-1}_m \sum_{n = 1}^{N_m} (\vec{x_{m_n}} - \vec{\mu} - k_m \vec{v}) \\
+\vec{\mu} &= \sum_{m=1}^M \sum_{n = 1}^{N_m} \frac{\vec{x}_{m_n} - k_m \vec{v}}{N_m}.
+\end{align}
+Further is necessary to derive MLE for rotation $\phi$:
+\begin{align}
+\frac{\partial \log\mathcal{L} }{\partial \phi} &= BLAH
+\end{align}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.55]{fig/em_blobs.eps}
+\caption[Pattern fitting with EM algorithm]{Pattern fitting}
+\label{fig:em_blobs}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.55]{fig/em_iterations.eps}
+\caption[Convergence of pattern fitting]{Convergence }
+\label{fig:convergence}
+\end{figure}

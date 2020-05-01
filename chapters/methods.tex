@@ -31,10 +31,10 @@ Expectation-maximization (EM) algorithm is iterative process which can find para
  \subsection{Maximization}
 For maximization step is used maximal likelihood estimate weighted by $\alpha$ from expectation step. For parameters of Gaussian distribution $\mathcal{N}(\mu, \sigma)$ and number of samples $N$ looks maximization as follows:
 \begin{equation}
-\mu = \frac{1}{N} \sum_{n = 1}^{N} \alpha_n x_n \\
+\mu = \frac{\sum_{n = 1}^{N} \alpha_n x_n}{\sum_{n = 1}^{N} \alpha_n}  \\
 \end{equation}
 \begin{equation}
-\sigma = \frac{1}{N} \sum_{n = 1}^{N}\alpha_n (x_n - \mu)^2.
+\sigma = \frac{\sum_{n = 1}^{N}\alpha_n (x_n - \mu)^2}{\sum_{n = 1}^{N} \alpha_n} .
 \end{equation}
 
 Very important assumption for the convergence of the algorithm is that its likelihood with respect to estimated parameter must be concave. This can be easily proved by computing the second derivative of likelihood function. For example for mean value $\mu$ it is easy to show that second derivative of likelihood is always negative which means that the function has no local optima.

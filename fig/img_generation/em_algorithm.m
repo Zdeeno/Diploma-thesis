@@ -1,36 +1,122 @@
+%% generate data
 clear all;
-clc;
-x1 = [1 -1; 0.5 0; -1 -1];
-x2 = [10 10.5; 9.5 9.5; 11 9]; 
-alphas = [1 1 1 1 1 1];
-mean = [10, 0];
-dist = sqrt(50);
-rot = 0;
+center = [3 3];
+real_phi = 2;
+real_vec = [cos(real_phi), sin(real_phi)];
+k = [-2.9 -1 0.75 2.75];
+var_real = 0.3;
+var_big = 20;
+real_samples = 30;
+noise_samples = 100;
+clrs = {'r', 'g', 'b', [1.0 0.5 0]};
 
-plot(x1(:, 1), x1(:, 2), "o",'MarkerEdgeColor', "r");
-hold on;
-plot(x2(:, 1), x2(:, 2), "o",'MarkerEdgeColor', "b");
+x1 = [mvnrnd(center + k(1)*real_vec, eye(2) * var_real, real_samples); mvnrnd([0 0], var_big.*eye(2), noise_samples)];
+x2 = [mvnrnd(center + k(2)*real_vec, eye(2) * var_real, real_samples); mvnrnd([0 0], var_big.*eye(2), noise_samples)];
+x3 = [mvnrnd(center + k(3)*real_vec, eye(2) * var_real, real_samples); mvnrnd([0 0], var_big.*eye(2), noise_samples)];
+x4 = [mvnrnd(center + k(4)*real_vec, eye(2) * var_real, real_samples); mvnrnd([0 0], var_big.*eye(2), noise_samples)];
+x = {x1, x2, x3, x4};
+
+a1 = ones(size(x1));
+a2 = ones(size(x1));
+a3 = ones(size(x1));
+a4 = ones(size(x1));
+a = {a1, a2, a3, a4};
+
+% em algorithm
+% init mean 
+mean = [0 0];
+phi = 0;
+vec = [cos(phi), sin(phi)];
+likelihood = [];
+
+sum_x = 0;
+sum_y = 0;
+sum_ax = 0;
+sum_ay = 0;
+for i = 1:4
+    sum_x = sum_x + sum(a{i}(:, 1).*x{i}(:, 1));
+    sum_y = sum_y + sum(a{i}(:, 2).*x{i}(:, 2));
+    sum_ax = sum_ax + sum(a{i}(:, 1));
+    sum_ay = sum_ay + sum(a{i}(:, 2));
+end
+mean(1) = sum_x/sum_ax;
+mean(2) = sum_y/sum_ay;
+
+sum_x = 0;
+sum_y = 0;
+% init rotation
+for i = 1:4
+    sum_x = sum_x + (sum( a{i}(:, 1).* (x{i}(:, 1) - mean(1)) / k(i))/sum_ax);
+    sum_y = sum_y + (sum( a{i}(:, 2).* (x{i}(:, 2) - mean(2)) / k(i))/sum_ay);
+end
+phi = atan2(sum_y, sum_x);
+vec = [cos(phi), sin(phi)];
+
+% iterate algorithm
+for epoch = 1:30
+    
+    % maximize mean
+    sum_x = 0;
+    sum_y = 0;
+    sum_ax = 0;
+    sum_ay = 0;
+    for i = 1:4
+        sum_x = sum_x + sum(a{i}(:, 1).* (x{i}(:, 1) - vec(1)*k(i)));
+        sum_y = sum_y + sum(a{i}(:, 2).* (x{i}(:, 2) - vec(2)*k(i)));
+        sum_ax = sum_ax + sum(a{i}(:, 1));
+        sum_ay = sum_ay + sum(a{i}(:, 2));
+    end
+    mean(1) = sum_x/sum_ax;
+    mean(2) = sum_y/sum_ay;
+
+    % maximize phi
+    sum_x = 0;
+    sum_y = 0;
+    for i = 1:4
+        sum_x = sum_x + (sum( a{i}(:, 1).* (x{i}(:, 1) - mean(1)) / k(i))/sum_ax);
+        sum_y = sum_y + (sum( a{i}(:, 2).* (x{i}(:, 2) - mean(2)) / k(i))/sum_ay);
+    end
+    phi = atan2(sum_y, sum_x);
+    vec = [cos(phi), sin(phi)];
+    
+    % expectation
+    lik_sum = 0;
+    for i = 1:4
+        a{i}(:, 1) = normpdf(x{i}(:, 1), mean(1)+vec(1)*k(i), 1);
+        a{i}(:, 2) = normpdf(x{i}(:, 2), mean(2)+vec(2)*k(i), 1);
+        lik_sum = lik_sum + sum(a{i}(:, 1)) + sum(a{i}(:, 2));
+    end
+    likelihood = [likelihood lik_sum];
+    
+end
+
+for i = 1:4
+    plot(mean(1) + vec(1)*k(i), mean(2) + vec(2)*k(i), "o", 'MarkerSize', 20, 'MarkerEdgeColor', clrs{i});
+    hold on;
+end
+for i = 1:4
+    plot(center(1) + real_vec(1)*k(i), center(2) + real_vec(2)*k(i), "*", 'MarkerSize', 15, 'MarkerEdgeColor', clrs{i});
+    hold on;
+end
+for i = 1:4
+    plot(x{i}(:, 1), x{i}(:, 2), ".", 'MarkerSize', 5, 'MarkerEdgeColor', clrs{i});
+    hold on;
+end
+grid on
+xlim([-10, 10]);
+ylim([-10, 10]);
+
+mean
+phi
+title("EM algorithm");
+xlabel("Distance (m)")
+ylabel("Distance (m)")
+
+figure
+plot(likelihood, "LineWidth", 1);
+title("Evolution of likelihood");
+xlabel("Iterations");
+ylabel("Likelihood");
 grid on;
-hold on;
-
-% Max likelihood
-mean(1) = (sum(x1(:, 1) .* alphas(1:3)') + sum(x2(:, 1) .* alphas(4:6)'))/numel(alphas);
-mean(2) = (sum(x1(:, 2) .* alphas(1:3)') + sum(x2(:, 2) .* alphas(4:6)'))/numel(alphas);
-
-upper_sum = sum(alphas(1:3)' .*  ((x1(:, 2) - mean(2))./(dist)));
-upper_sum = upper_sum + sum(alphas(4:6)' .*  ((x2(:, 2) - mean(2))./-dist))
-bott_sum = sum(alphas(1:3)' .*  ((x1(:, 1) - mean(1))./(dist)));
-bott_sum = bott_sum + sum(alphas(4:6)' .*  ((x2(:, 1) - mean(1))./-dist))
-rot = atan2(upper_sum, bott_sum);
-
-disp(mean)
-disp(rad2deg(rot))
-
-vec = [cos(rot) sin(rot)] * dist;
-plot(mean(1) + vec(1), mean(2) + vec(2), "o", 'MarkerSize', 50, 'MarkerEdgeColor','r');
-hold on;
-plot(mean(1) - vec(1), mean(2) - vec(2), "o", 'MarkerSize', 50, 'MarkerEdgeColor','b');
-
-
 
 
