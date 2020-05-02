@@ -130,7 +130,7 @@ The second type of fitting polls clusters from symbolic map and utilizes their c
 \begin{equation}
 P(\vec{x}_m) = \mathcal{N}_m(\vec{x}_m; \vec{\mu} + k_m\vec{v}; \bm{\Sigma}),
 \end{equation}
-where $m$ is pile (color index) and $M$ is absolute number of colors, $\vec{_mx}$ is measurement of color $m$, $\vec{\mu}$ is mean value of whole model, $\bm{\Sigma_m}$ is covariance matrix, $k_m$ is scalar multiplier unique for each pile and $\vec{v}$ is defined as:
+where $m$ is pile (color) index and $M$ is absolute number of colors, $\vec{x}_m$ is measurement of color $m$, $\vec{\mu}$ is mean value of whole model, $\bm{\Sigma_m}$ is covariance matrix, $k_m$ is scalar multiplier unique for each pile and $\vec{v}$ is defined as:
 \begin{equation}
 \vec{v} = \begin{bmatrix}
 \cos \phi \\
@@ -139,14 +139,28 @@ where $m$ is pile (color index) and $M$ is absolute number of colors, $\vec{_mx}
 \end{equation}
 where $\phi$ is rotation of model. This definition of model ensures that all piles (Gaussians) are in the line with distance defined by multiplier $k$. Now we want to obtain the position and rotation of such a model based on real measurements. There is a closed form solution for maximizing both terms which can be found using maximum likelihood estimate. For mean value is derivation very similar to simple Gaussian:
 \begin{align}
-\frac{\partial \log\mathcal{L} }{\partial \vec{\mu}} &= \sum_{m=1}^M \bm{\Sigma}^{-1}_m \sum_{n = 1}^{N_m} (\vec{x_{m_n}} - \vec{\mu} - k_m \vec{v}) \\
+\frac{\partial \log\mathcal{L} }{\partial \vec{\mu}} &= \sum_{m=1}^M \bm{\Sigma}^{-1}_m \sum_{n = 1}^{N_m} (\vec{x}_{m_n} - \vec{\mu} - k_m \vec{v}) \\
 \vec{\mu} &= \sum_{m=1}^M \sum_{n = 1}^{N_m} \frac{\vec{x}_{m_n} - k_m \vec{v}}{N_m}.
 \end{align}
-Further is necessary to derive MLE for rotation $\phi$:
+Further is necessary to derive MLE for rotation $\phi$ which is hidden inside vector $\vec{v}$. For simplicity is now the matrix equation split into one part for each of two dimensions.  
 \begin{align}
-\frac{\partial \log\mathcal{L} }{\partial \phi} &= BLAH
+\frac{\partial \log\mathcal{L}_x }{\partial \phi} &= \sum_{m=1}^{M} \frac{1}{\sigma^2_x} \sum_{n=1}^{N_m} (x_{m_n, x} - \mu_x - k_{m, x} \cos \phi) k_{m,x} \sin \phi \\
+\frac{\partial \log\mathcal{L}_y }{\partial \phi} &= \sum_{m=1}^{M} \frac{1}{\sigma^2_y} \sum_{n=1}^{N_m} (x_{m_n, y} - \mu_y - k_{m, y} \sin \phi) k_{m,y} \cos \phi
 \end{align}
-
+Likelihood derivative is now set equal to zero to find the extremes for each dimension.
+\begin{align}
+\cos \phi &= \sum_{m=1}^{M} \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} x_{m_n, x} - \mu_x \\ 
+\sin \phi &= \sum_{m=1}^{M} \frac{1}{k_{m, y}N_m} \sum_{n = 1}^{N_m} x_{m_n, y} - \mu_y .
+\end{align}
+Now it is possible divide one equation be the other and derive final expression for maximizing the rotation $\phi$:
+\begin{align}
+\tan \phi &= \frac{\sin \phi}{\cos \phi}\\
+\phi &= \arctan \left( \frac{\sum_{m=1}^{M} \frac{1}{k_{m, y}N_m} \sum_{n = 1}^{N_m} x_{m_n, y} - \mu_y }{\sum_{m=1}^{M} \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} x_{m_n, x} - \mu_x }\right).
+\end{align}
+Although the expression can be further simplified now it is easier to weight each data sample by the expectation $\alpha$. Final form used in maximization step looks as follows:
+\begin{equation}
+\phi = \arctan \left( \dfrac{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \alpha_{m_n, y}(x_{m_n, y} - \mu_y)}{k_{m, y}\sum_{n = 1}^{N_m} \alpha_{m_n, y}} }{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \alpha_{m_n, x} (x_{m_n, x} - \mu_x) }{k_{m, x}\sum_{n = 1}^{N_m} \alpha_{m_n, x}} }\right).
+\end{equation}
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.55]{fig/em_blobs.eps}
