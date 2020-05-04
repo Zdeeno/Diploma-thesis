@@ -139,4 +139,45 @@ phi
 % ylabel("Likelihood");
 % grid on;
 
+%% convergence
+clear all;
+center = [0 0];
+real_phi = 2;
+real_vec = [cos(real_phi), sin(real_phi)];
+k = [-2.9 -1 0.75 2.75];
+var_real = 0.3;
+var_big = 20;
+real_samples = 5;
+clrs = {'r', 'g', 'b', [1.0 0.5 0]};
+
+x1 = mvnrnd(center + k(1)*real_vec, eye(2) * var_real, real_samples);
+x2 = mvnrnd(center + k(2)*real_vec, eye(2) * var_real, real_samples);
+x3 = mvnrnd(center + k(3)*real_vec, eye(2) * var_real, real_samples);
+x4 = mvnrnd(center + k(4)*real_vec, eye(2) * var_real, real_samples);
+x = {x1, x2, x3, x4};
+
+mean = [0, 0];
+phi = -pi:0.01:pi;
+% expectation
+
+likelihood = zeros(1, numel(phi));
+for step = 1:numel(phi)
+    vec = [cos(phi(step)), sin(phi(step))];
+    lik_sum = 0;
+    for i = 1:4
+        a{i}(:, 1) = normpdf(x{i}(:, 1), mean(1)+vec(1)*k(i), 1);
+        a{i}(:, 2) = normpdf(x{i}(:, 2), mean(2)+vec(2)*k(i), 1);
+        lik_sum = lik_sum + sum(a{i}(:, 1)) + sum(a{i}(:, 2));
+    end
+    likelihood(step) = lik_sum;
+end
+
+phi
+likelihood
+plot(phi, likelihood, "LineWidth", 2)
+grid on
+title("Likelihood with respect to \phi")
+xlabel("\phi (rad)")
+ylabel("Likelihood")
+
 

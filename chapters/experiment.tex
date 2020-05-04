@@ -158,9 +158,10 @@ Now it is possible divide one equation by the other, use basic relationship of t
 \label{eq:prob}
 \end{align}
 Although the expression can be further simplified, in this form it is easier to weight each data sample by the expectation $\alpha$. Final form used in maximization step looks as follows:
-\begin{equation}
-\phi = \arctan \left( \dfrac{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \alpha_{m_n, y}(x_{m_n, y} - \mu_y)}{k_{m, y}\sum_{n = 1}^{N_m} \alpha_{m_n, y}} }{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \alpha_{m_n, x} (x_{m_n, x} - \mu_x) }{k_{m, x}\sum_{n = 1}^{N_m} \alpha_{m_n, x}} }\right).
-\end{equation}
+\begin{align}
+\phi = \arctan & \left( \dfrac{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \alpha_{m_n, y}(x_{m_n, y} - \mu_y)}{k_{m, y}\sum_{n = 1}^{N_m} \alpha_{m_n, y}} }{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \alpha_{m_n, x} (x_{m_n, x} - \mu_x) }{k_{m, x}\sum_{n = 1}^{N_m} \alpha_{m_n, x}} }\right)\\
+\vec{\mu} =& \sum_{m=1}^M \dfrac{\sum_{n = 1}^{N_m}  \vec{\alpha}_{m_n} \left( \vec{x}_{m_n} - k_m \vec{v} \right) }{\sum_{n = 1}^{N_m} \vec{\alpha}_{m_n}}.
+\end{align}
 Method is demonstrated in the figure \ref{fig:em_pattern}. Expectation is calculated simply by evaluating the probability of sample $P(\vec{x}_m)$ as in equation \ref{eq:prob}.
 
 \begin{figure}[H]
@@ -179,10 +180,21 @@ Method is demonstrated in the figure \ref{fig:em_pattern}. Expectation is calcul
 	\label{fig:em_pattern}
 \end{figure}
 
+\subsubsection{Convergence}
+The unimodality of model's likelihood was disrupted by adding the rotation parameter to Gaussians. Possible local optimum is shown in the figure \ref{fig:em_local}. Now there are no guarantees that the algorithm will converge into the global optimum. This is common problem of EM algorithm when dealing with more complex problems. Many solutions of this issue was proposed. Very advantageous is that local optima are usually significantly worse in terms of likelihood than the global optimum. One of methods how to avoid local optima is the deterministic annealing which influences the expectation in maximization step \cite{ueda1998}. Another way how to escape local optimum is to apply the perturbations to parameters of model. In our case it could be simply rotating the model by $180\degree$. Different approach would be population based em algorithm with multiple initializations or informed initialization. The latter is easily applicable in our case because the confidences of clusters could be used as the expectation in first step.
 
 \begin{figure}[H]
-\centering
-\includegraphics[scale=0.55]{fig/em_local.eps}
-\caption[Local optimum of EM algorithm]{Convergence }
-\label{fig:convergence}
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\centering
+		\includegraphics[scale=0.43]{fig/em_local.eps}
+	\end{subfigure}
+	\begin{subfigure}{.49\textwidth}
+		\centering
+		\includegraphics[scale=0.43]{fig/em_local_chart.eps}
+		
+	\end{subfigure}
+	
+	\caption[EM local optima]{When there is not enough samples the EM algorithm is more susceptible to ending in local optima as shown on the left. Right picture shows how different rotations of model with fixed mean influences the likelihood.}
+	\label{fig:em_local}
 \end{figure}
