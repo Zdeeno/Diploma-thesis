@@ -6,8 +6,8 @@ real_vec = [cos(real_phi), sin(real_phi)];
 k = [-2.9 -1 0.75 2.75];
 var_real = 0.3;
 var_big = 20;
-real_samples = 30;
-noise_samples = 100;
+real_samples = 5;
+noise_samples = 10;
 clrs = {'r', 'g', 'b', [1.0 0.5 0]};
 
 x1 = [mvnrnd(center + k(1)*real_vec, eye(2) * var_real, real_samples); mvnrnd([0 0], var_big.*eye(2), noise_samples)];
@@ -29,6 +29,25 @@ phi = 0;
 vec = [cos(phi), sin(phi)];
 likelihood = [];
 
+figure
+for i = 1:4
+    plot(mean(1) + vec(1)*k(i), mean(2) + vec(2)*k(i), "*", 'MarkerSize', 20, 'MarkerEdgeColor', clrs{i});
+    hold on;
+end
+for i = 1:4
+    plot(center(1) + real_vec(1)*k(i), center(2) + real_vec(2)*k(i), "o", 'MarkerSize', 30, 'MarkerEdgeColor', clrs{i});
+    hold on;
+end
+for i = 1:4
+    plot(x{i}(:, 1), x{i}(:, 2), ".", 'MarkerSize', 7, 'MarkerEdgeColor', clrs{i});
+    hold on;
+end
+grid on
+xlim([-10, 10]);
+ylim([-10, 10]);
+title("EM algorithm initialization");
+xlabel("Distance (m)")
+ylabel("Distance (m)")
 sum_x = 0;
 sum_y = 0;
 sum_ax = 0;
@@ -53,7 +72,7 @@ phi = atan2(sum_y, sum_x);
 vec = [cos(phi), sin(phi)];
 
 % iterate algorithm
-for epoch = 1:30
+for epoch = 1:1000
     
     % maximize mean
     sum_x = 0;
@@ -90,33 +109,34 @@ for epoch = 1:30
     
 end
 
+figure
 for i = 1:4
-    plot(mean(1) + vec(1)*k(i), mean(2) + vec(2)*k(i), "o", 'MarkerSize', 20, 'MarkerEdgeColor', clrs{i});
+    plot(mean(1) + vec(1)*k(i), mean(2) + vec(2)*k(i), "*", 'MarkerSize', 25, 'MarkerEdgeColor', clrs{i});
     hold on;
 end
 for i = 1:4
-    plot(center(1) + real_vec(1)*k(i), center(2) + real_vec(2)*k(i), "*", 'MarkerSize', 15, 'MarkerEdgeColor', clrs{i});
+    plot(center(1) + real_vec(1)*k(i), center(2) + real_vec(2)*k(i), "o", 'MarkerSize', 35, 'MarkerEdgeColor', clrs{i});
     hold on;
 end
 for i = 1:4
-    plot(x{i}(:, 1), x{i}(:, 2), ".", 'MarkerSize', 5, 'MarkerEdgeColor', clrs{i});
+    plot(x{i}(:, 1), x{i}(:, 2), ".", 'MarkerSize', 9, 'MarkerEdgeColor', clrs{i});
     hold on;
 end
 grid on
-xlim([-10, 10]);
-ylim([-10, 10]);
-
-mean
-phi
-title("EM algorithm");
+xlim([-2, 8]);
+ylim([-2, 8]);
+title("EM algorithm result");
 xlabel("Distance (m)")
 ylabel("Distance (m)")
 
-figure
-plot(likelihood, "LineWidth", 1);
-title("Evolution of likelihood");
-xlabel("Iterations");
-ylabel("Likelihood");
-grid on;
+mean
+phi
+
+% figure
+% plot(likelihood, "LineWidth", 1);
+% title("Evolution of likelihood");
+% xlabel("Iterations");
+% ylabel("Likelihood");
+% grid on;
 
 
