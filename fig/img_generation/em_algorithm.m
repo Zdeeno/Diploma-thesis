@@ -45,9 +45,9 @@ end
 grid on
 xlim([-10, 10]);
 ylim([-10, 10]);
-title("EM algorithm initialization");
-xlabel("Distance (m)")
-ylabel("Distance (m)")
+title("EM algorithm initialization", 'fontsize', 15);
+xlabel("Distance (m)", 'fontsize', 15)
+ylabel("Distance (m)", 'fontsize', 15)
 sum_x = 0;
 sum_y = 0;
 sum_ax = 0;
@@ -125,9 +125,9 @@ end
 grid on
 xlim([-2, 8]);
 ylim([-2, 8]);
-title("EM algorithm result");
-xlabel("Distance (m)")
-ylabel("Distance (m)")
+title("EM algorithm result", 'fontsize', 15);
+xlabel("Distance (m)", 'fontsize', 15)
+ylabel("Distance (m)", 'fontsize', 15)
 
 mean
 phi
@@ -176,8 +176,8 @@ phi
 likelihood
 plot(phi, likelihood, "LineWidth", 2)
 grid on
-title("Likelihood with respect to \phi")
-xlabel("\phi (rad)")
-ylabel("Likelihood")
+title("Likelihood with respect to \phi", 'fontsize', 13)
+xlabel("\phi (rad)", 'fontsize', 13)
+ylabel("Likelihood", 'fontsize', 13)
 
 

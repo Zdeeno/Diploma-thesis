@@ -90,32 +90,6 @@ Number of drawn samples in \textbf{draw\_samples} must be equal or higher than t
 \subsection{Tentative Correspondences}
 The tentative correspondences can help us to choose better samples from the data to generate the better hypothesis. It is necessary to define some function witch measure the similarity between data and  hypothesis. The data which has higher similarity to the hypothesis are then chosen with higher probability. It is also possible to completely ban correspondences with low similarity. Given the typical application in scene analysis is similarity usually computed by comparing keypoint descriptors.
 
-\section{Lidar to camera registration}
-As can be seen in the figure \ref{fig:brickdef} (where the bricks are defined) besides the dimensions another important feature of the bricks is their color. Although, the color manifests itself little bit in reflectivity of the surface which can be detected by lidar, it is not possible reliably distinguish the colors using only the lidar sensor. Until there is a gap between the individual bricks, it is possible to detect brick using just the spatial data. Ideally the robot should be stacking bricks next to each other without any significant gap. Without any information about the color is then impossible to decide whether is the robot detecting one large brick or several small bricks put together. So for this part of detection is necessary to color the pointcloud. This can be done by using the image from Intel RealSense camera and projecting 3D lidar pointcloud to the camera plane. For this purpose is used the pinhole camera model. To describe such a model is used intrinsic camera matrix $K$ which consists of intristic camera parameters \cite{hartley2017}
-\begin{equation}
-K = \begin{bmatrix}
-f_x & 0 & c_x \\
-0 & f_y & c_y \\
-0 & 0 & 1
-\end{bmatrix},
-\end{equation}
-where $f_x, f_y$ are focal lengths and $c_x, c_y$ stands for optical center of the camera.
-
-Firstly is necessary to transform whole pointcloud from lidar coordinate frame to camera frame. For this purpose are used so called extrinsic camera parameters, which describes where in lidar coordinate frame is camera placed. This is more discussed in the next section of the thesis. Secondly we can use the camera intrinsic parameters to calculate the projection. Note that it is needed to work in homogenous 2D coordinate system.
-\begin{equation}
-\begin{bmatrix}
-u\\
-v\\
-1
-\end{bmatrix}
-= K \begin{bmatrix}
-x\\
-y\\
-z
-\end{bmatrix}.
-\end{equation}
-Using this matrix equality is possible to decide which coordinates $u,v$ on image plane corresponds to 3D point $x,y,z$ from pointcloud and assign color of a certain pixel to the point. However this works only for the simplest pinhole camera model without any distortion of image. If the lens has non-negligible distortion, this distortion must be included in the camera model. For description of distortion are used the distortion coefficients.
-
 \section{Global model and transformations}
 One of the goals of this thesis is develop a global model which can efficiently store and update the positions of interest points. This global model is in the map coordinate frame. The localization of the robot is absolutely essential for precise global model. Every detection must be transformed from the coordinate frame of the sensor to coordinate frame of the map. Transformation can be easily done using matrix multiplication:
 \begin{equation}
@@ -163,3 +137,29 @@ where $q_A$ is quaternion in coordinate frame $A$, $q_B$ is quaternion in coordi
 
 \subsection{Symbolic map}
 When are all detections transformed into the map frame we can add them into a symbolic map. The symbolic map is storing the positions of all interest points and makes up the global model of the arena. Every object added to symbolic map has a float number which indicates confidence of detection. When there is a new detection within certain range from an object already stored in the symbolic map, new object is not added but only the confidence is increased. This approach creates a clusters of interest points of different types. All interest points can be polled from the symbolic map and robot can make decisions based on confidence of such an interest point. The symbolic map also checks whether the inserted object is located inside the arena otherwise is the object rejected. (CITACE)
+
+\subsection{Lidar to camera registration}
+As can be seen in the figure \ref{fig:brickdef} (where the bricks are defined) besides the dimensions another important feature of the bricks is their color. Although, the color manifests itself little bit in reflectivity of the surface which can be detected by lidar, it is not possible reliably distinguish the colors using only the lidar sensor. Until there is a gap between the individual bricks, it is possible to detect brick using just the spatial data. Ideally the robot should be stacking bricks next to each other without any significant gap. Without any information about the color is then impossible to decide whether is the robot detecting one large brick or several small bricks put together. So for this part of detection is necessary to color the pointcloud. This can be done by using the image from Intel RealSense camera and projecting 3D lidar pointcloud to the camera plane. For this purpose is used the pinhole camera model. To describe such a model is used intrinsic camera matrix $K$ which consists of intristic camera parameters \cite{hartley2017}
+\begin{equation}
+K = \begin{bmatrix}
+f_x & 0 & c_x \\
+0 & f_y & c_y \\
+0 & 0 & 1
+\end{bmatrix},
+\end{equation}
+where $f_x, f_y$ are focal lengths and $c_x, c_y$ stands for optical center of the camera.
+
+Firstly is necessary to transform whole pointcloud from lidar coordinate frame to camera frame. For this purpose are used so called extrinsic camera parameters, which describes where in lidar coordinate frame is camera placed. This type of transformation is discussed at the beginning of this section. Secondly we can use the camera intrinsic parameters to calculate the projection. Note that it is needed to work in homogenous 2D coordinate system.
+\begin{equation}
+\begin{bmatrix}
+u\\
+v\\
+1
+\end{bmatrix}
+= K \begin{bmatrix}
+x\\
+y\\
+z
+\end{bmatrix}.
+\end{equation}
+Using this matrix equality is possible to decide which coordinates $u,v$ on image plane corresponds to 3D point $x,y,z$ from pointcloud and assign color of a certain pixel to the point. However this works only for the simplest pinhole camera model without any distortion of image. If the lens has non-negligible distortion, this distortion must be included in the camera model. For description of distortion are used the distortion coefficients.
