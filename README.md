@@ -1,3 +1,3 @@
 # Diploma-thesis
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/7ebl4dwkl4w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Brick detection](https://img.youtube.com/vi/7ebl4dwkl4w/0.jpg)](https://www.youtube.com/watch?v=7ebl4dwkl4w)
