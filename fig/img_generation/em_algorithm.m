@@ -48,18 +48,16 @@ ylim([-10, 10]);
 title("EM algorithm initialization", 'fontsize', 15);
 xlabel("Distance (m)", 'fontsize', 15)
 ylabel("Distance (m)", 'fontsize', 15)
-sum_x = 0;
-sum_y = 0;
 sum_ax = 0;
 sum_ay = 0;
+m1 = 0;
+m2 = 0;
 for i = 1:4
-    sum_x = sum_x + sum(a{i}(:, 1).*x{i}(:, 1));
-    sum_y = sum_y + sum(a{i}(:, 2).*x{i}(:, 2));
-    sum_ax = sum_ax + sum(a{i}(:, 1));
-    sum_ay = sum_ay + sum(a{i}(:, 2));
+    m1 = m1 + (sum(a{i}(:, 1).*x{i}(:, 1))) / (sum(a{i}(:, 1)));
+    m2 = m2 + (sum(a{i}(:, 2).*x{i}(:, 2))) / (sum(a{i}(:, 2)));
 end
-mean(1) = sum_x/sum_ax;
-mean(2) = sum_y/sum_ay;
+mean(1) = m1/4;
+mean(2) = m2/4;
 
 sum_x = 0;
 sum_y = 0;
@@ -79,9 +77,10 @@ for epoch = 1:1000
     sum_y = 0;
     sum_ax = 0;
     sum_ay = 0;
+    
     for i = 1:4
-        sum_x = sum_x + sum(a{i}(:, 1).* (x{i}(:, 1) - vec(1)*k(i)));
-        sum_y = sum_y + sum(a{i}(:, 2).* (x{i}(:, 2) - vec(2)*k(i)));
+        m1 = m1 + (sum(a{i}(:, 1).*x{i}(:, 1))) / (sum(a{i}(:, 1)));
+        m2 = m2 + (sum(a{i}(:, 2).*x{i}(:, 2))) / (sum(a{i}(:, 2)));
         sum_ax = sum_ax + sum(a{i}(:, 1));
         sum_ay = sum_ay + sum(a{i}(:, 2));
     end
