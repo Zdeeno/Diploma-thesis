@@ -1,7 +1,7 @@
-\section{Methods}
+\chapter{Methods}
 In this section of thesis are described methods which can be applied to detection of the bricks. Only brief description is provided and all methods are presented in general form.
 
-\subsection{Lidar detection range analysis}
+\section{Lidar detection range analysis}
 It is useful to know possible range of detection based on lidar sensor. This range influences the way how the robot explores the arena and also influences choice of used methods. Higher the detection range is, lower number of waypoints is necessary to explore whole arena. There is a limited time for exploration, because brick pickup and brick placement takes a lot of time. Speed of pickup and placement is limited mainly by the speed of Kinova arm. We estimate the maximal range using the figure \ref{fig:range}.
 
 \begin{figure}[H]
@@ -43,7 +43,7 @@ In the figure \ref{fig:horizontal_hits} is clearly visible that the horizontal r
 	\label{fig:vertical_hits}
 \end{figure}
 
-\subsection{Lidar data processing}
+\section{Lidar data processing}
 
 To detect individual bricks it would be handy to extract straight lines from lidar data. Several methods can be used to achieve this goal. One of the most popular algorithms for lines extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. Simple version of this algorithm for pointcloud processing is described in algorithm \ref{alg:segmentation}. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example just the method of fitting a line to cluster can vary a lot. Very often is used the method of least squares, but as simple method as connecting endpoints of the cluster could be used. When the latter method is applied, algorithm is usually refered as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation are the points iterated in each layer one by one. When the distance of subsequent points is too high we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In a comparison to other line extraction algorithms is the split and merge algorithm one of the best performing in terms of precision and computational complexity \cite{nguyen2006}.
 \begin{algorithm}[]
@@ -69,11 +69,11 @@ merge\_parallel(line\_segments)\;
 \end{algorithm}
 
 
-\subsection{EM algorithm}
+\section{EM algorithm}
 Expectation-maximization (EM) algorithm is iterative process which can find parameters of certain statistical model based on incomplete data. One of the most used statistical description for the EM algorithm is the Gaussian mixture model. This model is particularly useful because it emerges in many real world situations and it is easy to maximize. As the name of algorithm suggests it repeats expectation and maximization step. Each iteration of the algorithm should improve the likelihood of the model until the terminating criterion is met. The termination criterion can be simply number of iterations or the algorithm can be stopped when the model is not improving anymore. Although we are discussing mainly the Gaussian distribution, EM algorithm can be also used for other distributions from exponential family
  \cite{dempster1977}. Usage of EM algorithm for classification of 3D lidar data is not completely novel approach. Gaussian mixtures was already used for terrain recognition \cite{lalonde2006}.
  
- \subsubsection{Maximization}
+\subsection{Maximization}
 For maximization step is used maximal likelihood estimate weighted by $\gamma$ from expectation step. For parameters of Gaussian distribution $\mathcal{N}(\mu, \sigma)$ and number of samples $N$ looks maximization as follows:
 \begin{equation}
 \mu = \sum_{n = 1}^{N} \gamma_n x_n \\
@@ -89,7 +89,7 @@ Very important assumption for the convergence of the algorithm is that its likel
 \frac{\partial^2 \log \mathcal{L}}{\partial \mu^2} &= \frac{-N}{\sigma^2}.
 \end{align}
 
-\subsubsection{Expectation}
+\subsection{Expectation}
 The expectation step is done simply by evaluating conditional probability of current parameters given the sample:
 \begin{equation}
 \gamma_n = P(\mu, \sigma | x_n),
@@ -104,7 +104,7 @@ There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and 
 \gamma_n = \dfrac{\mathcal{N}(x_n, \mu, \sigma) }{\sum_{k = 1}^N \mathcal{N}(x_k, \mu, \sigma) }.
 \end{equation}
 
-\subsubsection{Algorithm}
+\subsection{Algorithm}
 How to implement general version of EM algorithm on sampled data is shown in algorithm \ref{alg:em}. All important calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step so during the initialization we set $\alpha_n = 1$. If some prior information about parameters of the model is available, they can be set during the initialization and the algorithm can be started with expectation step. This informed initialization can highly reduce the number of iterations and sometimes even an outcome of the algorithm.
 \begin{algorithm}[]
  \KwData{x}
@@ -119,7 +119,7 @@ How to implement general version of EM algorithm on sampled data is shown in alg
 \end{algorithm}
 
 
-\subsection{RANSAC}
+\section{RANSAC}
 Random sample consensus (RANSAC) is an iterative method which can estimate parameters of hypothesis given the data. It was first presented by Fischler \cite{fischler1981} with application in scene and image analysis, but it can be used for fitting arbitrary hypothesis. The biggest advantage of this algorithm is its robustness to outliers. Major drawback of this method is very high time complexity when fitting hypothesis to noisy data with large number of samples. Whole iterative process is described in algorithm \ref{alg:ransac}.
 \begin{algorithm}[]
  \KwData{x}
@@ -140,10 +140,10 @@ Random sample consensus (RANSAC) is an iterative method which can estimate param
 
 Number of drawn samples in \textbf{draw\_samples} must be equal or higher than the number of degrees of freedom of the hypothesis. After drawing the samples method \textbf{find\_parameters} assigns the correspondences between sampled data and the hypothesis. The correspondences are used to obtain the parameters of the hypothesis. Then is the algorithm evaluating quality of the hypothesis by applying the hypothesis to whole dataset. This can be done by arbitrary cost function. Common practice is to define some metrics in our domain and use a threshold value to obtain the number of samples which fits the hypothesis. These samples are often referred as inliers. Stopping criterion is usually met when the probability of sampling better hypothesis is lower than a specified threshold. This section describes just the basic version of the algorithm. Many improvements to RANSAC algorithm was proposed since 1981 \cite{chum2008}.
 
-\subsubsection{Tentative Correspondences}
+\subsection{Tentative Correspondences}
 The tentative correspondences can help us to choose better samples from the data to generate the better hypothesis. It is necessary to define some function witch measure the similarity between data and  hypothesis. The data which has higher similarity to the hypothesis are then chosen with higher probability. It is also possible to completely ban correspondences with low similarity. Given the typical application in scene analysis is similarity usually computed by comparing keypoint descriptors.
 
-\subsection{Global model and transformations}
+\section{Global model and transformations}
 One of the goals of this thesis is develop a global model which can efficiently store and update the positions of interest points. This global model is in the map coordinate frame. The localization of the robot is absolutely essential for precise global model. Every detection must be transformed from the coordinate frame of the sensor to coordinate frame of the map. Transformation can be easily done using matrix multiplication:
 \begin{equation}
 \begin{bmatrix}
@@ -188,10 +188,10 @@ q_A = q_T q_B q_T^*,
 \end{equation}
 where $q_A$ is quaternion in coordinate frame $A$, $q_B$ is quaternion in coordinate frame $B$, $q_T$ is quaternion representing the transformation between these coordinate frames and $q_T^*$ is its conjugate. There is available a library within the ROS which can handle all these transformations in different forms \cite{tf}. 
 
-\subsubsection{Symbolic map}
+\subsection{Symbolic map}
 When are all detections transformed into the map frame we can add them into a symbolic map. The symbolic map is storing the positions of all interest points and makes up the global model of the arena. Every object added to symbolic map has a float number which indicates confidence of detection. When there is a new detection within certain range from an object already stored in the symbolic map, new object is not added but only the confidence is increased. This approach creates a clusters of interest points of different types. All interest points can be polled from the symbolic map and robot can make decisions based on confidence of such an interest point. The symbolic map also checks whether the inserted object is located inside the arena otherwise is the object rejected. (CITACE)
 
-\subsubsection{Lidar to camera registration}
+\subsection{Lidar to camera registration}
 As can be seen in the figure \ref{fig:brickdef} (where the bricks are defined) besides the dimensions another important feature of the bricks is their color. Although, the color manifests itself little bit in reflectivity of the surface which can be detected by lidar, it is not possible reliably distinguish the colors using only the lidar sensor. Until there is a gap between the individual bricks, it is possible to detect brick using just the spatial data. Ideally the robot should be stacking bricks next to each other without any significant gap. Without any information about the color is then impossible to decide whether is the robot detecting one large brick or several small bricks put together. So for this part of detection is necessary to color the pointcloud. This can be done by using the image from Intel RealSense camera and projecting 3D lidar pointcloud to the camera plane. For this purpose is used the pinhole camera model. To describe such a model is used intrinsic camera matrix $K$ which consists of intristic camera parameters \cite{hartley2017}
 \begin{equation}
 K = \begin{bmatrix}
