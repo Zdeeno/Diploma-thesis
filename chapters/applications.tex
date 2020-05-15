@@ -99,17 +99,17 @@ where $m$ is pile (color) index and $M$ is absolute number of colors, $\vec{x}_m
 \end{equation}
 where $\phi$ is the rotation of the model. This definition of the model ensures that all piles (Gaussians) are in line with a distance defined by multiplier $k$. Now we want to obtain the position and rotation of such a model based on real measurements. There is a closed-form solution for maximizing both terms, which can be found using the maximum likelihood estimate. For mean value is derivation very similar to multivariate Gaussian:
 \begin{align}
-\frac{\partial \log\mathcal{L} }{\partial \vec{\mu}_m} &=  \bm{\Sigma}^{-1}_m \sum_{n = 1}^{N_m} (\vec{x}_{m_n} - \vec{\mu} - k_m \vec{v}) \\
+\frac{\partial \log\mathcal{L} }{\partial \vec{\mu}_m} &=  \bm{\Sigma}^{-1}_m \sum_{n = 1}^{N_m} (\vec{x}_{m_n} - \vec{\mu} - k_m \vec{v}), \\
 \vec{\mu_m} &= \sum_{n = 1}^{N_m} \frac{\vec{x}_{m_n} - k_m \vec{v}}{N_m}.
 \end{align}
 Further is necessary to derive MLE for rotation $\phi$ which is hidden inside vector $\vec{v}$. For simplicity is now the matrix equation split into one part for each of two dimensions.  
 \begin{align}
-\frac{\partial \log\mathcal{L}_x }{\partial \phi_m} &= \frac{1}{\sigma^2_x} \sum_{n=1}^{N_m} (x_{m_n, x} - \mu_x - k_{m, x} \cos \phi) \left( -k_{m,x} \sin \phi\right)  \\
-\frac{\partial \log\mathcal{L}_y }{\partial \phi_m} &= \frac{1}{\sigma^2_y} \sum_{n=1}^{N_m} (x_{m_n, y} - \mu_y - k_{m, y} \sin \phi) k_{m,y} \cos \phi
+\frac{\partial \log\mathcal{L}_x }{\partial \phi_m} &= \frac{1}{\sigma^2_x} \sum_{n=1}^{N_m} (x_{m_n, x} - \mu_x - k_{m, x} \cos \phi) \left( -k_{m,x} \sin \phi\right),  \\
+\frac{\partial \log\mathcal{L}_y }{\partial \phi_m} &= \frac{1}{\sigma^2_y} \sum_{n=1}^{N_m} (x_{m_n, y} - \mu_y - k_{m, y} \sin \phi) k_{m,y} \cos \phi.
 \end{align}
 Likelihood derivative is now set equal to zero to find the extremes for each dimension.
 \begin{align}
-\cos \phi_m &= \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} x_{m_n, x} - \mu_x \\ 
+\cos \phi_m &= \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} x_{m_n, x} - \mu_x, \\ 
 \sin \phi_m &=  \frac{1}{k_{m, y}N_m} \sum_{n = 1}^{N_m} x_{m_n, y} - \mu_y .
 \end{align}
 Now it is possible divide one equation by the other, use basic relationship of trigonometric functions and derive final expression for maximizing the rotation $\phi$:
@@ -118,7 +118,7 @@ Now it is possible divide one equation by the other, use basic relationship of t
 \end{align}
 Although the expression can be further simplified, in this form, it is easier to weight each data sample by the expectation $\alpha$. Also, it is necessary to consider the contribution of each color to the pile model. This can be done in two ways. One possibility is to set an equal contribution to each data sample. In our case, this could lead to bias towards the most detected color (usually red). Therefore we set equal contributions to all colors instead of the samples. The final form used in the maximization step looks as follows:
 \begin{align}
-\vec{\mu} =& \sum_{m=1}^M \dfrac{\sum_{n = 1}^{N_m}  \vec{\gamma}_{m_n} \left( \vec{x}_{m_n} - k_m \vec{v} \right) }{M} \\
+\vec{\mu} =& \sum_{m=1}^M \dfrac{\sum_{n = 1}^{N_m}  \vec{\gamma}_{m_n} \left( \vec{x}_{m_n} - k_m \vec{v} \right) }{M}, \\
 \phi = \arctan & \left( \dfrac{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \gamma_{m_n, y}(x_{m_n, y} - \mu_y)}{k_{m, y} } }{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \gamma_{m_n, x} (x_{m_n, x} - \mu_x) }{k_{m, x}} }\right).
 \end{align}
 Method is demonstrated in the figure \ref{fig:em_pattern}. Expectation is calculated simply by evaluating the probability of sample $P(\vec{x}_m)$ as in equation \ref{eq:prob}. Results can be further improved when the confidence of sample is used as the prior probability.
@@ -168,7 +168,7 @@ It is vital to emphasize on proper arena exploration. If all the interest points
 	\label{fig:detection_range}
 \end{figure}
 
-The waypoints of exploration movement should be generated so that circles cover the area of the whole arena with an 8-meter radius. Generated waypoints in the arena are visualized in the figure \ref{fig:map_annot}. On each waypoint, the robot must stop, raise the arm, and look around with the camera. There are several reasons why camera detection cannot be done while moving. First of all, the arm can not be raised to the highest possible position while the robot is moving. Otherwise, it could get stuck or damaged. In addition, the motion blur of an image would reduce the detection range even further. During camera detection, the robot must stay still, but the lidar detections can be done while moving, which can further improve the detection. Whole map exploration is described in the algorithm \ref{alg:exploration}.
+The waypoints of exploration movement should be generated so that circles cover the area of the whole arena with an 8-meter radius. Generated waypoints in the arena are visualized in the figure \ref{fig:map_annot}. On each waypoint, the robot must stop, raise the arm, and look around with the camera. There are several reasons why camera detection cannot be done while moving. First of all, the arm can not be raised to the highest possible position while the robot is moving. Otherwise, it could get stuck or damaged. In addition, the motion blur of an image would reduce the detection range even further. During camera detection, the robot must stay still, but the lidar detections can be done while moving, which can further improve the detection. Whole map exploration is described in the algorithm \ref{alg:exploration}. The waypoints are ordered prior to this algorithm. How to order them is beyond the scope of this thesis. In algorithm is visible that the method \textbf{start\_lidar\_detection} is non-blocking service which just turns on the detector, whereas the method \textbf{do\_camera\_detection} is blocking service which waits until the arm looks around with camera and finishes the detection. This method is also the most time consuming part of the loop.
 
 \begin{figure}[H]
 	\centering
@@ -194,12 +194,14 @@ The waypoints of exploration movement should be generated so that circles cover 
 	\If{not has\_all\_objects}{
 		go\_to(get\_strongest\_candidate())\;
 	}
-	\caption{Algorithm to explore whole map. The waypoints are ordered prior to this algorithm. How to order them is beyond the scope of this thesis. In algorithm is visible that the method \textbf{start\_lidar\_detection} is non-blocking service which just turns on the detector, whereas the method \textbf{do\_camera\_detection} is blocking service which waits until the arm looks around with camera and finishes the detection. This method is also the most time consuming part of the loop.}
+	\caption{Algorithm to explore whole map.}
 	\label{alg:exploration}
 \end{algorithm}
 
 \section{Stacked bricks detection}
-It is evident that, when the bricks are stacked close to each other without any significant gap, it is impossible to distinguish which bricks the lidar detects. This issue was already addressed in previous chapters. It is desired to know what color particular lidar point has. That is done by the camera to lidar registration. Since we know the relative position of the camera to lidar and the intrinsic camera matrix, it is no problem to assign a color to each point. The colors are further utilized during the clustering. We can now split clusters not only using the spatial data, but the splitting can be based on the color difference of the following points. Modified clustering is visible in algorithm \ref{alg:clustering}. Note that the color distance is computed from the whole cluster mean to a new point. When the new point is added, the color of the cluster should be recalculated. This is important to reduce camera noise influence on the final form of clusters. When the running-mean technique is used, the clusters are split only in sharp color transitions. How the point-cloud coloring and final detection looks like is shown in figure  \ref{fig:colors}. Since the robot stacked all of these bricks, their relative position should be known. Whole stacking is a predefined sequence of movements, and thus we can add each placed brick into the list of stacked bricks with its relative position to place where stacking started. These known positions can be used to generate hypothesis which can be fitted with the RANSAC algorithm in the same way as during the pattern fitting. When we use colors for the segmentation, it is crucial to choose the right color space. During the experiments, it was much easier to distinguish between green and blue color in LAB color space than in HSV color space. The robot is not capable of carrying orange bricks, so it was not necessary to segment the orange color, which is problematic because it can be easily confused with red color. This part of detection is not discussed any further because it was more important to localize the initial position of UGV bricks, and placing more than one load of bricks was not achievable in the given timeframe.
+It is evident that, when the bricks are stacked close to each other without any significant gap, it is impossible to distinguish which bricks the lidar detects. This issue was already addressed in previous chapters. It is desired to know what color particular lidar point has. That is done by the camera to lidar registration. Since we know the relative position of the camera to lidar and the intrinsic camera matrix, it is no problem to assign a color to each point. The colors are further utilized during the clustering. We can now split clusters not only using the spatial data, but the splitting can be based on the color difference of the following points. Modified clustering is visible in algorithm \ref{alg:clustering}. Input points must be ordered layer from lidar pointcloud. Constant \textbf{C} is clustering distance, \textbf{T} is color clustering distance and \textbf{min\_size} is minimal cluster size - this has high influence on range of brick candidate generation. Note that the color distance is computed from the whole cluster mean to a new point. When the new point is added, the color of the cluster should be recalculated. This is important to reduce camera noise influence on the final form of clusters. When the running-mean technique is used, the clusters are split only in sharp color transitions. 
+
+How the point-cloud coloring and final detection looks like is shown in figure  \ref{fig:colors}. Since the robot stacked all of these bricks, their relative position should be known. Whole stacking is a predefined sequence of movements, and thus we can add each placed brick into the list of stacked bricks with its relative position to place where stacking started. These known positions can be used to generate hypothesis which can be fitted with the RANSAC algorithm in the same way as during the pattern fitting. When we use colors for the segmentation, it is crucial to choose the right color space. During the experiments, it was much easier to distinguish between green and blue color in LAB color space than in HSV color space. The robot is not capable of carrying orange bricks, so it was not necessary to segment the orange color, which is problematic because it can be easily confused with red color. This part of detection is not discussed any further because it was more important to localize the initial position of UGV bricks, and placing more than one load of bricks was not achievable in the given timeframe.
 
 \begin{algorithm}[H]
 	\KwData{points}
@@ -221,7 +223,7 @@ It is evident that, when the bricks are stacked close to each other without any 
 			}
 		}
 	}
-	\caption{Spatial and color clustering. Input points must be ordered layer from lidar pointcloud. Constant \textbf{C} is clustering distance, \textbf{T} is color clustering distance and \textbf{min\_size} is minimal cluster size - this has high influence on range of brick candidate generation.}
+	\caption{Spatial and color clustering.}
 	\label{alg:clustering}
 \end{algorithm}
 

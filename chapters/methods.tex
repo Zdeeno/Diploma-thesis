@@ -21,8 +21,8 @@ a = \sqrt{2b^2 \left(1-\cos \alpha \right)}.
 \end{equation}
 Now we want to know how many rays $N$ would hit the brick from given distance $b$ with lidar angular resolution $\alpha$ and the size of the brick $a$. 
 \begin{align}
-a &= \sqrt{2b^2 \left(1-\cos \left( N \alpha \right) \right)} \\
-N &= \frac{\arccos\left(1-\frac{a^2}{2b^2}\right) }{\alpha}
+a &= \sqrt{2b^2 \left(1-\cos \left( N \alpha \right) \right)}, \\
+N &= \frac{\arccos\left(1-\frac{a^2}{2b^2}\right) }{\alpha}.
 \label{eq:rays}
 \end{align}
 Finally, we can plot a function of the number of rays $N$ with respect to distance to object $b$. This analysis can be done similarly for vertical and horizontal resolution.
@@ -45,7 +45,7 @@ In figure \ref{fig:horizontal_hits} is visible that the horizontal resolution of
 
 \section{Lidar data processing}
 
-It would be handy to extract straight lines from lidar data to detect individual bricks. Several methods can be used to achieve this goal. One of the most popular algorithms for line extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. A simple version of this algorithm for point-cloud processing is described in algorithm \ref{alg:segmentation}. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example, just the method of fitting a line to the cluster can vary a lot. The method of least squares is often used, but as a simple method as connecting endpoints of the cluster could be used. When the latter method is applied, the algorithm is usually referred to as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation, the points are iterated in each layer one by one. When the distance of the following points is too high, we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In comparison to other line extraction algorithms is the split and merge algorithm, one of the best performings in terms of precision and computational complexity \cite{nguyen2006}.
+It would be handy to extract straight lines from lidar data to detect individual bricks. Several methods can be used to achieve this goal. One of the most popular algorithms for line extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. A simple version of this algorithm for point-cloud processing is described in algorithm \ref{alg:segmentation}, where \textbf{C} is clustering distance and \textbf{S} is splitting distance. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example, just the method of fitting a line to the cluster can vary a lot. The method of least squares is often used, but as a simple method as connecting endpoints of the cluster could be used. When the latter method is applied, the algorithm is usually referred to as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation, the points are iterated in each layer one by one. When the distance of the following points is too high, we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In comparison to other line extraction algorithms is the split and merge algorithm, one of the best performings in terms of precision and computational complexity \cite{nguyen2006}.
 \begin{algorithm}[]
  \KwData{pointcloud}
  \KwResult{line\_segments}
@@ -64,7 +64,7 @@ initialize constants C, S\;
 }
 merge\_parallel(line\_segments)\;
  
- \caption{Lidar data segmentation using split and merge algorithm. \textbf{C} is clustering distance and \textbf{S} is splitting distance.}
+ \caption{Lidar data segmentation using split and merge algorithm.}
  \label{alg:segmentation}
 \end{algorithm}
 
@@ -75,7 +75,7 @@ Expectation-maximization (EM) algorithm is an iterative process that can find pa
 \subsection{Maximization}
 For maximization step is used maximal likelihood estimate weighted by $\gamma$ from expectation step. For parameters of Gaussian distribution $\mathcal{N}(\mu, \sigma)$ and number of samples $N$ looks maximization as follows:
 \begin{equation}
-\mu = \sum_{n = 1}^{N} \gamma_n x_n \\
+\mu = \sum_{n = 1}^{N} \gamma_n x_n, \\
 \end{equation}
 \begin{equation}
 \sigma = \sum_{n = 1}^{N}\gamma_n (x_n - \mu)^2 .
@@ -83,8 +83,8 @@ For maximization step is used maximal likelihood estimate weighted by $\gamma$ f
 
 A critical assumption for the convergence of the algorithm is that its likelihood with respect to the estimated parameter must be concave. This can be easily proved by computing the second derivative of the likelihood function. For example, for the mean value of distribution  $\mu$, it is easy to show that the second derivative of likelihood is always negative, which means that the function has no local optima.
 \begin{align}
-\mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma) \\
-\frac{\partial \log \mathcal{L}}{\partial \mu} &= \frac{1}{\sigma^2} \sum_{n = 1}^{N} (x_n - \mu) \\
+\mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma), \\
+\frac{\partial \log \mathcal{L}}{\partial \mu} &= \frac{1}{\sigma^2} \sum_{n = 1}^{N} (x_n - \mu), \\
 \frac{\partial^2 \log \mathcal{L}}{\partial \mu^2} &= \frac{-N}{\sigma^2}.
 \end{align}
 
@@ -95,7 +95,7 @@ The expectation step is done simply by evaluating conditional probability of cur
 \end{equation}
 which is calculated using the Bayes theorem and the law of total probability:
 \begin{align}
-\gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{P(x_n)} \\
+\gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{P(x_n)}, \\
 \gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{\sum_{k = 1}^N P(x_k | \mu, \sigma) P(\mu, \sigma)}.
 \end{align}
 There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and the equation simplifies to final form:
@@ -104,7 +104,7 @@ There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and 
 \end{equation}
 
 \subsection{Algorithm}
-How to implement a generic version of the EM algorithm on sampled data is shown in algorithm \ref{alg:em}. All relevant calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step, so during the initialization, we set $\alpha_n = 1$. If some prior information about the model's parameters is available, they can be set during the initialization, and the algorithm can be started with the expectation step. This informed initialization can remarkably reduce the number of iterations and sometimes even an outcome of the algorithm.
+How to implement a generic version of the EM algorithm on sampled data is shown in algorithm \ref{alg:em}, where \textbf{x} is the observed data samples. All relevant calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step, so during the initialization, we set $\alpha_n = 1$. If some prior information about the model's parameters is available, they can be set during the initialization, and the algorithm can be started with the expectation step. This informed initialization can remarkably reduce the number of iterations and sometimes even an outcome of the algorithm.
 \begin{algorithm}[]
  \KwData{x}
  \KwResult{parameters $\theta$}
@@ -113,13 +113,13 @@ How to implement a generic version of the EM algorithm on sampled data is shown 
 	$\theta$ = maximization(x, $\alpha$)\;
 	$\alpha$ = expectation(x, $\theta$)\;
 } 
- \caption{Pseudocode shows how to implement the EM algorithm. \textbf{x} is the observed data.}
+ \caption{Pseudocode shows how to implement the EM algorithm.}
  \label{alg:em}
 \end{algorithm}
 
 
 \section{RANSAC}
-Random sample consensus (RANSAC) is an iterative method which can estimate parameters of the hypothesis given the data. It was first presented by Fischler \cite{fischler1981} with application in scene and image analysis, but it can be used for fitting arbitrary hypothesis. The most significant advantage of this algorithm is its robustness to outliers. The major drawback of this method is its high time complexity when fitting hypotheses to noisy data with a large number of samples. The whole iterative process is described in the algorithm \ref{alg:ransac}.
+Random sample consensus (RANSAC) is an iterative method which can estimate parameters of the hypothesis given the data. It was first presented by Fischler \cite{fischler1981} with application in scene and image analysis, but it can be used for fitting arbitrary hypothesis. The most significant advantage of this algorithm is its robustness to outliers. The major drawback of this method is its high time complexity when fitting hypotheses to noisy data with a large number of samples. The whole iterative process is described in the algorithm \ref{alg:ransac}, where \textbf{x} is the observed data, \textbf{C} is the maximized cost and $\bm{\theta}$ are the parameters of the hypothesis.
 \begin{algorithm}[]
  \KwData{x}
  \KwResult{best parameters $\theta^*$}
@@ -130,10 +130,10 @@ Random sample consensus (RANSAC) is an iterative method which can estimate param
 	$C$ = compute\_cost(x, $\theta$)\;
 	\If{$C > C^*$}{
 		$C^* = C$\;
-		$\theta^* = \theta$	\;
+		$\theta^* = \theta$\;
 	}
 } 
- \caption{Pseudocode shows how to implement the RANSAC algorithm. x is the observed data, C is the maximized cost and $\theta$ are the parameters of the hypothesis.}
+ \caption{Pseudocode shows how to implement the RANSAC algorithm.}
  \label{alg:ransac}
 \end{algorithm}
 
@@ -171,7 +171,7 @@ z^\prime \\
  & & & \\
  & R & & \vec{t} \\
  & & & \\
- 0 & 0 & 0 & 1
+  & \vec{0} &  & 1
 \end{bmatrix}
 \begin{bmatrix}
 x \\
