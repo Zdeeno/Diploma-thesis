@@ -9,11 +9,11 @@ The robot managed to localize all interest points even though the line segmentat
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.33]{fig/experiment}
+	\includegraphics[scale=0.3]{fig/experiment}
 	\caption[Experiment results]{In the figure is a screenshot from the experiment. Small spheres on the map are polled clusters from the symbolic map. Different types of detections create these clusters. The size of the sphere represents the confidence of a cluster. The spheres' color corresponds to the color of bricks, and the spheres representing the clusters for UAV destination are colored black. Black is also the pointcloud obtained from lidar and borders of the map. In green color are visualized all particles from the AMCL and also the line representing detection of initial brick pattern. A red line marks the position and rotation of the UAV destination. Note that the RANSAC detector was disabled in this experiment to test the EM algorithm fitting properly. The whole video from the experiment is available at \footnotemark.}
 	\label{fig:experiment}
 \end{figure}
-\footnotetext{\url{https://www.youtube.com/watch?v=7ebl4dwkl4w} } 
+\footnotetext{\url{https://www.youtube.com/watch?v=KKpCGdJnv7Y} } 
 
 \section{Detector setup}
 For experiment was used detection pipeline as desribed in Figure \ref{fig:flowchart}. Value of all constants is listed in Table \ref{tab:constants}.
