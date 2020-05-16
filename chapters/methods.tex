@@ -161,22 +161,16 @@ z
 where $R$ is $3\times3$ the rotation matrix and $t$ is a $1\times3$ translation vector between coordinate frames. Similarly the transformation can be done in homogenous coordinates by merging translation and rotation into one matrix $T$:
 \begin{equation}
 \begin{bmatrix}
-x^\prime \\
-y^\prime \\
-z^\prime \\
+\vec{x}^\prime \\
 1
 \end{bmatrix}
 =
 \begin{bmatrix}
- & & & \\
- & R & & \vec{t} \\
- & & & \\
-  & \vec{0} &  & 1
+ \bm{R} & \vec{t} \\
+ \vec{0} &  1
 \end{bmatrix}
 \begin{bmatrix}
-x \\
-y \\
-z \\
+\vec{x}\\
 1
 \end{bmatrix}.
 \end{equation}

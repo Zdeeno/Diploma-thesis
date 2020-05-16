@@ -1,7 +1,10 @@
 \chapter{Experiment}
 
-The experiment was conducted on the ROS bag taken during the first rehearsal attempt. The robot drove around the perimeter to map the whole arena using the Gmapping package. The brick pattern is placed in the left bottom quadrant and the drone delivery in the right top quadrant of the arena. It was surprising that the organizers chose the arena with a significant slope in the middle. We did not expect perfectly flat ground, but the angle of the slope was much higher than our expectations. Besides, the middle part of the arena was made of different - very smooth surface, which negatively influenced odometry, especially in rotation. That makes the localization in the middle much more difficult because, in this place, the robot is tilted, so the laserscan aims into the ground or into the height, and there is also a quite high distance to the nearest significant feature inside the map, which could help to adjust the position. This behavior is visible on the particle cloud during the experiment. When the robot arrives in the middle, the particles are spread into the width. These circumstances caused many problems to teams, which trained for the contest in laboratory grade conditions. Also, it is necessary to mention that there were many people inside the arena during our experiment, which makes the detection even more challenging because people could be easily interpreted as a red pile.
+The experiment was conducted on the ROS bag taken during the first rehearsal attempt. The robot drove around the perimeter to map the whole arena using the Gmapping package. The brick pattern is placed in the left bottom quadrant and the drone delivery in the right top quadrant of the arena.
 
+ It was surprising that the organizers chose the arena with a significant slope in the middle. We did not expect perfectly flat ground, but the angle of the slope was much higher than our expectations. Besides, the middle part of the arena was made of different - very smooth surface, which negatively influenced odometry, especially in rotation. That makes the localization in the middle much more difficult because, in this place, the robot is tilted, so the laserscan aims into the ground or into the height, and there is also a quite high distance to the nearest significant feature inside the map, which could help to adjust the position. This behavior is visible on the particle cloud during the experiment. When the robot arrives in the middle, the particles are spread into the width. These circumstances caused many problems to teams, which trained for the contest in laboratory grade conditions. Also, it is necessary to mention that there were many people inside the arena during our experiment, which makes the detection even more challenging because people could be easily interpreted as a red pile. Visualization of experiment is shown in the Figure \ref{fig:experiment}.
+
+The robot managed to localize all interest points even though the line segmentation produces a large number of false-positive detections. A significant advantage for the detection is that the clusters are merging measurements from different positions and because the robot is moving during the detections, it is improbable to accumulate multiple false positive detections into the one cluster. Thus these false-positive candidates have very low confidence, and it is not hard for the EM algorithm to find the actual position of interest points.
 
 
 \begin{figure}[H]
@@ -11,6 +14,31 @@ The experiment was conducted on the ROS bag taken during the first rehearsal att
 	\label{fig:experiment}
 \end{figure}
 \footnotetext{\url{https://www.youtube.com/watch?v=7ebl4dwkl4w} } 
+
+\section{Detector setup}
+For experiment was used detection pipeline as desribed in Figure \ref{fig:flowchart}. Value of all constants is listed in Table \ref{tab:constants}.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{cc}
+		\toprule
+		Constant & Value \\
+		\midrule
+		$C$ [m] & 0.07   \\ 
+		$S$ [m] & 0.07  \\
+		$\sigma_x$ [m] & 0.3 \\ 
+		$\sigma_y$ [m] & 0.3    \\ 
+		$min\_size$ & 10 \\
+		$\vec{k}_{pile} $ [m] & [1, 2, 3, 4] \\
+		$\vec{k}_{destination}$ [m] & [1, 2, 3, 4] \\
+		$d$ [m] & 0.05 \\
+		\bottomrule
+	\end{tabular}
+	\caption{List of constants used in experiment.}
+	\label{tab:constants}
+\end{table}
+
+\section{Precision of detections}
 
 
 \newpage
