@@ -109,16 +109,16 @@ Further is necessary to derive MLE for rotation $\phi$ which is hidden inside ve
 \end{align}
 Likelihood derivative is now set equal to zero to find the extremes for each dimension.
 \begin{align}
-\cos \phi_m &= \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} x_{m_n, x} - \mu_x, \\ 
-\sin \phi_m &=  \frac{1}{k_{m, y}N_m} \sum_{n = 1}^{N_m} x_{m_n, y} - \mu_y .
+\cos \phi_m &= \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} \left(  x_{m_n, x} - \mu_x \right)  , \\ 
+\sin \phi_m &=  \frac{1}{k_{m, y}N_m} \sum_{n = 1}^{N_m} \left(  x_{m_n, y} - \mu_y \right)  .
 \end{align}
-Now it is possible divide one equation by the other, use basic relationship of trigonometric functions and derive final expression for maximizing the rotation $\phi$:
+Now it is possible divide one equation by the other, use basic relationship of trigonometric functions, and derive final expression for maximizing the rotation $\phi$:
 \begin{align}
 \phi_m &= \arctan \left( \frac{\dfrac{\sum_{n = 1}^{N_m} \left( x_{m_n, y} - \mu_y \right)}{k_{m, y}N_m} }{ \dfrac{\sum_{n = 1}^{N_m} \left( x_{m_n, x} - \mu_x \right)}{k_{m, x}N_m} }\right).
 \end{align}
 Although the expression can be further simplified, in this form, it is easier to weight each data sample by the expectation $\alpha$. Also, it is necessary to consider the contribution of each color to the pile model. This can be done in two ways. One possibility is to set an equal contribution to each data sample. In our case, this could lead to bias towards the most detected color (usually red). Therefore we set equal contributions to all colors instead of the samples. The final form used in the maximization step looks as follows:
 \begin{align}
-\vec{\mu} =& \sum_{m=1}^M \dfrac{\sum_{n = 1}^{N_m}  \vec{\gamma}_{m_n} \left( \vec{x}_{m_n} - k_m \vec{v} \right) }{M}, \\
+\vec{\mu} =& \sum_{m=1}^M \dfrac{1}{M}\sum_{n = 1}^{N_m}  \vec{\gamma}_{m_n} \left( \vec{x}_{m_n} - k_m \vec{v} \right) , \\
 \phi = \arctan & \left( \dfrac{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \gamma_{m_n, y}(x_{m_n, y} - \mu_y)}{k_{m, y} } }{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \gamma_{m_n, x} (x_{m_n, x} - \mu_x) }{k_{m, x}} }\right).
 \end{align}
 Method is demonstrated in the figure \ref{fig:em_pattern}. Expectation is calculated simply by evaluating the probability of sample $P(\vec{x}_m)$ as in equation \ref{eq:prob}. Results can be further improved when the confidence of sample is used as the prior probability.
@@ -227,22 +227,20 @@ How the point-cloud coloring and final detection looks like is shown in figure  
 	\label{alg:clustering}
 \end{algorithm}
 
+\vspace{3mm}
+
 \begin{figure}[H]
-	\centering
-	\begin{subfigure}{1\textwidth}
+	
+	\begin{subfigure}{0.49\textwidth}
 		\centering
-		\includegraphics[scale=0.28]{fig/colors_camera}
+		\includegraphics[scale=0.2]{fig/colors_camera}
 	\end{subfigure}
-
-	\vspace{5mm}
-
-	\begin{subfigure}{1\textwidth}
+	\begin{subfigure}{0.49\textwidth}
 		\centering
-		\includegraphics[scale=0.27]{fig/colors_lidar}
-		
+		\includegraphics[scale=0.19]{fig/colors_lidar}
 	\end{subfigure}
 	
-	\caption[Colored pointcloud detections]{Detection of bricks using color based clustering. At the top is image from camera pointing at built wall. Black dots are points captured by the lidar sensor. At the bottom is shown final detection in map frame. All of the bricks are correctly detected, although they are poorly painted and the environment is quite challenging, especially with the green grass on the ground.}
+	\caption[Colored pointcloud detections]{Detection of bricks using color based clustering. On the left is image from camera pointing at built wall. Black dots are points captured by the lidar sensor. On the right is shown final detection in map frame. All of the bricks are correctly detected, although they are poorly painted and the environment is quite challenging, especially with the green grass on the ground.}
 	\label{fig:colors}
 \end{figure}
 
