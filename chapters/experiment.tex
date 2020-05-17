@@ -4,7 +4,9 @@ The experiment was conducted on the ROS bag taken during the first rehearsal att
 
  It was surprising that the organizers chose the arena with a significant slope in the middle. We did not expect perfectly flat ground, but the angle of the slope was much higher than our expectations. Besides, the middle part of the arena was made of different - very smooth surface, which negatively influenced odometry, especially in rotation. That makes the localization in the middle much more difficult because, in this place, the robot is tilted, so the laserscan aims into the ground or into the height, and there is also a quite high distance to the nearest significant feature inside the map, which could help to adjust the position. This behavior is visible on the particle cloud during the experiment. When the robot arrives in the middle, the particles are spread into the width. These circumstances caused many problems to teams, which trained for the contest in laboratory grade conditions. Also, it is necessary to mention that there were many people inside the arena during our experiment, which makes the detection even more challenging because people could be easily interpreted as a red pile. Visualization of experiment is shown in the Figure \ref{fig:experiment}.
 
-The robot managed to localize all interest points even though the line segmentation produces a large number of false-positive detections. A significant advantage for the detection is that the clusters are merging measurements from different positions and because the robot is moving during the detections, it is improbable to accumulate multiple false positive detections into the one cluster. Thus these false-positive candidates have very low confidence, and it is not hard for the EM algorithm to find the actual position of interest points.
+The robot managed to localize all interest points even though the line segmentation produces a large number of false-positive detections. A significant advantage for the detection is that the clusters are merging measurements from different positions and because the robot is moving during the detections, it is improbable to accumulate multiple false positive detections into the one cluster. Thus these false-positive candidates have very low confidence, and it is not hard for the EM algorithm to find the actual position of interest points. 
+
+At the beginning of ROS bag the robot drives around the piles in $\approx 5$m distance and then in $\approx 4$m distance to UAV destination wall. At the end the robot drives back to the center of map and comes closer to the red pile. For experiment was used detection pipeline as desribed in Figure \ref{fig:flowchart}. Value of all constants is listed in Table \ref{tab:constants}. We conducted additional experiments when we tested only individual parts of the detection pipeline. In following sections are measured the precision of such a detections.
 
 
 \begin{figure}[H]
@@ -14,9 +16,6 @@ The robot managed to localize all interest points even though the line segmentat
 	\label{fig:experiment}
 \end{figure}
 \footnotetext{\url{https://www.youtube.com/watch?v=KKpCGdJnv7Y} } 
-
-\section{Detector setup}
-For experiment was used detection pipeline as desribed in Figure \ref{fig:flowchart}. Value of all constants is listed in Table \ref{tab:constants}.
 
 \begin{table}[H]
 	\centering
@@ -29,9 +28,15 @@ For experiment was used detection pipeline as desribed in Figure \ref{fig:flowch
 		$\sigma_x$ [m] & 0.3 \\ 
 		$\sigma_y$ [m] & 0.3    \\ 
 		$min\_size$ & 10 \\
-		$\vec{k}_{pile} $ [m] & [1, 2, 3, 4] \\
-		$\vec{k}_{destination}$ [m] & [1, 2, 3, 4] \\
+		$max\_err$ [m] & 0.04 \\
 		$d$ [m] & 0.05 \\
+		$\vec{k}_{pile} $ [m] & $\begin{bmatrix}
+			-2.9 & -1 & 0.75 & 2.75
+		\end{bmatrix}$ \\
+		$\vec{k}_{destination}$ [m] &
+		$\begin{bmatrix}
+			-\cfrac{6}{\sqrt{2}} &  -\cfrac{2}{\sqrt{2}} &  \cfrac{2}{\sqrt{2}} &  \cfrac{6}{\sqrt{2}}
+		\end{bmatrix}$ \\
 		\bottomrule
 	\end{tabular}
 	\caption{List of constants used in experiment.}
@@ -39,6 +44,38 @@ For experiment was used detection pipeline as desribed in Figure \ref{fig:flowch
 \end{table}
 
 \section{Precision of detections}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{cccc}
+		\toprule
+		Type & True & False & Precision \\
+		\midrule
+		Red & 174 & 70 & 71.3\% \\
+		Green & 57 & 9 & 86.3\% \\
+		Blue & 24 & 63 & 27.5\% \\
+		Orange & 32 & 20 & 61.5\% \\
+		Wall & 280 & 11 & 96.2\% \\
+		\bottomrule
+	\end{tabular}
+	\caption{Precision of line segmentation.}
+	\label{tab:seg_precision}
+\end{table}
 
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{cccc}
+		\toprule
+		Type & True & False & Precision \\
+		\midrule
+		Red & 39 & 1 & 97.5\% \\
+		Green & 36 & 0 & 100\% \\
+		Blue & 14 & 1 & 93.3\% \\
+		Orange & 17 & 0 & 100\% \\
+		\bottomrule
+	\end{tabular}
+	\caption{Precision of pile detection.}
+	\label{tab:pile_precision}
+\end{table}
 
 \newpage
