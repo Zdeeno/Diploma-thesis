@@ -158,7 +158,9 @@ Method is demonstrated in the Figure \ref{fig:em_pattern}. Expectation is calcul
 \subsubsection{Convergence}
 The unimodality of the model's likelihood was disrupted by adding the rotation parameter to Gaussians. Possible local optimum is shown in the Figure \ref{fig:em_local}. Now there are no guarantees that the algorithm converges into the global optimum. That is a common issue of the EM algorithm when dealing with more complex problems. Many solutions to this issue were proposed. Very advantageous is that local optima are usually significantly worse in terms of likelihood than the global optimum. 
 
-One way to avoid local optima is the deterministic annealing, which influences how the expectation is used in maximization step \cite{ueda1998}. Another way how to escape local optimum is to apply the perturbations to parameters of the model. In our case, it could be, for example, rotating the model by $180\degree$. A different approach would be a population-based em algorithm with multiple initializations or informed initialization. The latter is easily applicable in our case because the confidences of clusters could be used in the expectation step. Because we have the formulas for gradient, it is also possible to use an arbitrary gradient ascend method instead of an EM algorithm to maximize the likelihood of the model.
+One way to avoid local optima is the deterministic annealing, which influences how the expectation is used in maximization step \cite{ueda1998}. Another way how to escape local optimum is to apply a perturbations to parameters of the model. In our case, it could be, for example, rotating the model by $180\degree$. A different approach would be a population-based em algorithm with multiple initializations or informed initialization. The latter is easily applicable in our case because the confidences of clusters could be used in the expectation step. 
+
+Because we have also the formulas for gradient, it is also possible to use an arbitrary gradient ascend method instead of an MLE to maximize the likelihood of the model. The advantage of using the MLE for maximization step is that the algorithm converge very fast and the computation is usually much faster than the computation of any gradient method.
 
 \begin{figure}[H]
 	\centering
@@ -172,12 +174,12 @@ One way to avoid local optima is the deterministic annealing, which influences h
 		
 	\end{subfigure}
 	
-	\caption[EM local optima]{When there is not enough samples the EM algorithm is more susceptible to ending in local optima as shown on the left. Right picture shows how different rotations of model with fixed mean influences the likelihood and it also shows that there is a local maximum. The likelihood is maximal when $\phi = 2$ which is optimal rotation of model.}
+	\caption[EM local optima]{When there are not enough samples, the EM algorithm is more susceptible to getting stuck in local optima, as shown on the left. The right picture shows how different rotations of the model with fixed mean influences the likelihood, and it also shows that there is a local maximum.  The likelihood is maximal when $\phi = 2$ which is optimal rotation of model.}
 	\label{fig:em_local}
 \end{figure}
 
 \section{Arena exploration}
-It is vital to emphasize on proper arena exploration. If all the interest points are not found, the robot can not proceed in completing the challenge. Except for the initial brick position, it is necessary to find also the destination where the bricks should be placed. This place is marked by the checker pattern in Figure \ref{fig:checker}. The only sensor which can detect the destination pattern is the camera. The big advantage is that the camera is mounted onto the arm so that it can be raised into height and turn around. As can be seen in Figure \ref{fig:detection_range}, the most limiting factor of the detection range is currently the destination pattern search.
+It is vital to emphasize on proper arena exploration. If all the interest points are not found, the robot can not proceed in completing the challenge. Except for the initial brick position, it is necessary to find also the destination where the bricks should be placed. This place is marked by the checker pattern in Figure \ref{fig:checker}. The only sensor which can detect the destination pattern is the camera. The big advantage is that the camera is mounted onto the arm so that it can be raised into height and turn around. As can be seen in Figure \ref{fig:detection_range}, the most limiting factor of the detection range is currently the UGV destination pattern search.
 
 \begin{figure}[H]
 	\centering
