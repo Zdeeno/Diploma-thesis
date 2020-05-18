@@ -220,20 +220,19 @@ Whole map exploration is described in the algorithm \ref{alg:exploration}. The w
 \end{algorithm}
 
 \section{Stacked bricks detection}
-It is evident that, when the bricks are stacked close to each other without any significant gap, it is impossible to distinguish which bricks the lidar detects. This issue was already addressed in previous chapters. It is desired to know what color particular lidar point has. That is done by the camera to lidar registration. Since we know the relative position of the camera to lidar and the intrinsic camera matrix, it is no problem to assign a color to each point. The colors are further utilized during the clustering. We can now split clusters not only using the spatial data, but the splitting can be based on the color difference of the following points. 
+It is evident that, when the bricks are stacked close to each other without any significant gap, it is impossible to distinguish which bricks the lidar detects. This issue was already addressed in previous chapters. It is desired to know what color particular lidar point has. That is done by the camera to lidar registration. Since we know the relative position of the camera to lidar and the intrinsic camera matrix, it is no problem to assign a color to each point. The colors are further utilized during the clustering. We can now split clusters not only using the spatial data, but the splitting can be based on the color difference of the subsequent points. 
 
-Modified clustering is visible in algorithm \ref{alg:clustering}. Input points must be ordered layer from lidar pointcloud. Constant $C$ is clustering distance, $T$ is color clustering distance and $min\_size$ is minimal cluster size - this has high influence on range of brick candidate generation. Note that the color distance is computed from the whole cluster mean to a new point. When the new point is added, the color of the cluster should be recalculated. This is important to reduce camera noise influence on the final form of clusters. When the running-mean technique is used, the clusters are split only in sharp color transitions. 
+Modified clustering is visible in algorithm \ref{alg:clustering}. Input points must be ordered layer from lidar pointcloud. Constant $C$ is clustering distance, $T$ is color clustering distance and $min\_size$ is minimal cluster size - this has high influence on range of brick candidate generation. Note that the color distance is computed from the whole cluster mean to a new point. When the new point is added, the color of the cluster should be recalculated. This is important to reduce camera noise influence on the final form of clusters. When this running-mean technique is used, the clusters are split only in sharp color transitions. 
 
-How the point-cloud coloring and final detection looks like is shown in Figure  \ref{fig:colors}. Since the robot stacked all of these bricks, their relative position should be known. Whole stacking is a predefined sequence of movements, and thus we can add each placed brick into the list of stacked bricks with its relative position to place where stacking started. These known positions can be used to generate hypothesis which can be fitted with the RANSAC algorithm in the same way as during the pattern fitting. 
+How the point-cloud coloring and final detection looks like is shown in Figure  \ref{fig:colors}. Since the robot stacked all of these bricks, their relative position should be known. Whole stacking is a predefined sequence of movements, and thus we can add each placed brick into the list of stacked bricks with its relative position to place where stacking started. These known positions can be used to generate hypothesis which can be fitted by the RANSAC algorithm in the same way as during the pattern fitting. 
 
-When we use colors for the segmentation, it is crucial to choose the right color space. During the experiments, it was much easier to distinguish between green and blue color in LAB color space than in HSV color space. Although the LAB color space is more computationally intensive, it is preferred for color segmentation \cite{wang2014}. The robot is not capable of carrying orange bricks, so it was not necessary to segment the orange color, which is problematic because it can be easily confused with red color. This part of detection is not discussed any further because it was more important to localize the initial position of UGV bricks, and placing more than one load of bricks was not achievable in the given timeframe.
+When we use colors for the segmentation, it is crucial to choose the right color space. During the experiments, it was much easier to distinguish between green and blue color in LAB color space than in HSV color space. The LAB is more computationally intensive, but it is preferred color space for segmentation \cite{wang2014}. The robot is not capable of carrying orange bricks, so it was not necessary to segment the orange color, which is problematic because it can be easily confused with red color. This part of detection is not discussed any further because it was more important to localize the initial position of UGV bricks. Furthermore placing more than one load of bricks was not achievable in the given timeframe.
 
 \begin{algorithm}[H]
 	\KwData{points}
 	\KwResult{clusters}
 	initialize constants C, T, min\_size \;
-	cluster = []\;
-	clusters = []\;
+	cluster = [], 	clusters = []\;
 	\ForEach{pt in points}{
 		\eIf{cluster.empty()}{
 			cluster.push\_back(pt)\;
@@ -258,14 +257,14 @@ When we use colors for the segmentation, it is crucial to choose the right color
 	
 	\begin{subfigure}{0.49\textwidth}
 		\centering
-		\includegraphics[scale=0.2]{fig/colors_camera}
+		\includegraphics[scale=0.19]{fig/colors_camera}
 	\end{subfigure}
 	\begin{subfigure}{0.49\textwidth}
 		\centering
-		\includegraphics[scale=0.19]{fig/colors_lidar}
+		\includegraphics[scale=0.18]{fig/colors_lidar}
 	\end{subfigure}
 	
-	\caption[Colored pointcloud detections]{Detection of bricks using color based clustering. On the left is image from camera pointing at built wall. Black dots are points captured by the lidar sensor. On the right is shown final detection in map frame. All of the bricks are correctly detected, although they are poorly painted and the environment is quite challenging, especially with the green grass on the ground.}
+	\caption[Colored pointcloud detections]{Detection of bricks using color based clustering. On the left is image from camera pointing at built wall. Black dots are points captured by the lidar sensor. On the right is shown final detection in map frame. All of the bricks are correctly detected, even though they are poorly painted and the environment is quite challenging, especially with the green grass on the ground.}
 	\label{fig:colors}
 \end{figure}
 
