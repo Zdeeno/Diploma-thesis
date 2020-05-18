@@ -81,7 +81,7 @@ For the sake of completeness, it is necessary to describe what exact equipment w
 \end{figure}
 
 \subsection{Velodyne VLP-16}
-This thesis deals mainly with lidar data. Therefore, the following subsection provides a more detailed description of the lidar sensor. Inside the VLP-16 puck is rotating infrared laser of class one, which measures the distance using the time of flight principle. A 12V power supply powers lidar and the data are transferred via UDP packets over the ethernet. Parameters of the Velodyne lidar are listed in the Table \ref{tab:lidar}.
+This thesis deals mainly with lidar data. Therefore, the following subsection provides a more detailed description of the lidar sensor. Inside the VLP-16 puck is rotating infrared laser of class one, which measures the distance using the time of flight principle. A 12V power supply powers lidar and the data are transferred via UDP packets over the ethernet. Configuration of the Velodyne lidar used for the contest is described in the Table \ref{tab:lidar}. The lidar can be set up with slightly better resolution, but there is a trade-off between resolution and frequency.
 
 \begin{table}[H]
 \centering
@@ -91,11 +91,11 @@ Parameter & Value \\
 \midrule
 Layers                            & 16   \\ 
 Maximal Range [m]                         & 100  \\
-Vertical FOV [$\degree$]          & $\pm20$   \\ 
+Vertical FOV [$\degree$]          & $\pm15$   \\ 
 Vertical resolution [$\degree$]   & 2    \\ 
 Horizontal FOV [$\degree$]        & 360  \\ 
-Horizontal resolution [$\degree$] & 0.1  \\ 
-Frequency [Hz]                    & 5    \\ 
+Horizontal resolution [$\degree$] & 0.4  \\ 
+Frequency [Hz]                    & 20    \\ 
 Precision [m]                     & $\pm0.03$ \\ 
 \bottomrule
 \end{tabular}
