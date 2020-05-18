@@ -30,7 +30,7 @@ Finally, we can plot a function of the number of rays $N$ with respect to distan
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.55]{fig/horizontal_range.eps}
-	\caption[Horizontal range chart]{Number of hits of the smallest brick from given distance.}
+	\caption[Horizontal range chart]{Number of rays which hits the smallest brick from given distance.}
 	\label{fig:horizontal_hits}
 \end{figure}
 
@@ -39,13 +39,13 @@ In Figure \ref{fig:horizontal_hits} is visible that the horizontal resolution of
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.55]{fig/vertical_range.eps}
-	\caption[Vertical range chart]{Number of hits of two stacked bricks from given distance.}
+	\caption[Vertical range chart]{Number of layers which hits two stacked bricks from given distance.}
 	\label{fig:vertical_hits}
 \end{figure}
 
 \section{Lidar data processing}
 
-It would be handy to extract straight lines from lidar data to detect individual bricks. Several methods can be used to achieve this goal. One of the most popular algorithms for line extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1974}. A simple version of this algorithm for point-cloud processing is described in algorithm \ref{alg:segmentation}, where \textbf{C} is clustering distance and \textbf{S} is splitting distance. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example, just the method of fitting a line to the cluster can vary a lot. The method of least squares is often used, but as a simple method as connecting endpoints of the cluster could be used. When the latter method is applied, the algorithm is usually referred to as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation, the points are iterated in each layer one by one. When the distance of the following points is too high, we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In comparison to other line extraction algorithms is the split and merge algorithm, one of the best performings in terms of precision and computational complexity \cite{nguyen2006}.
+It would be handy to extract straight lines from lidar data to detect individual bricks. Several methods can be used to achieve this goal. One of the most popular algorithms for line extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1976}. A simple version of this algorithm for point-cloud processing is described in algorithm \ref{alg:segmentation}, where C is clustering distance and S is splitting distance. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example, just the method of fitting a line to the cluster can vary a lot. The method of least squares is often used, but as a simple method as connecting endpoints of the cluster could be used. When the latter method is applied, the algorithm is usually referred to as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation, the points are iterated in each layer one by one. When the distance of the following points is too high, we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In comparison to other line extraction algorithms is the split and merge algorithm, one of the best performings in terms of precision and computational complexity \cite{nguyen2006}.
 \begin{algorithm}[]
  \KwData{pointcloud}
  \KwResult{line\_segments}
@@ -83,9 +83,9 @@ For maximization step is used maximal likelihood estimate weighted by $\gamma$ f
 
 A critical assumption for the convergence of the algorithm is that its likelihood with respect to the estimated parameter must be concave. This can be easily proved by computing the second derivative of the likelihood function. For example, for the mean value of distribution  $\mu$, it is easy to show that the second derivative of likelihood is always negative, which means that the function has no local optima.
 \begin{align}
-\mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma), \\
+\mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma), \nonumber \\
 \frac{\partial \log \mathcal{L}}{\partial \mu} &= \frac{1}{\sigma^2} \sum_{n = 1}^{N} (x_n - \mu), \\
-\frac{\partial^2 \log \mathcal{L}}{\partial \mu^2} &= \frac{-N}{\sigma^2}.
+\frac{\partial^2 \log \mathcal{L}}{\partial \mu^2} &= \frac{-N}{\sigma^2}. \nonumber
 \end{align}
 
 \subsection{Expectation}
@@ -95,7 +95,7 @@ The expectation step is done simply by evaluating conditional probability of cur
 \end{equation}
 which is calculated using the Bayes theorem and the law of total probability:
 \begin{align}
-\gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{P(x_n)}, \\
+\gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{P(x_n)}, \nonumber \\
 \gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{\sum_{k = 1}^N P(x_k | \mu, \sigma) P(\mu, \sigma)}.
 \end{align}
 There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and the equation simplifies to final form:
@@ -109,7 +109,7 @@ How to implement a generic version of the EM algorithm on sampled data is shown 
  \KwData{x}
  \KwResult{parameters $\theta$}
  set all $\alpha_n$ = 1\;
-\While{not stopping\_criterion}{
+\While{not stopping\_criterion(x, $\theta$)}{
 	$\theta$ = maximization(x, $\alpha$)\;
 	$\alpha$ = expectation(x, $\theta$)\;
 } 
@@ -119,17 +119,17 @@ How to implement a generic version of the EM algorithm on sampled data is shown 
 
 
 \section{RANSAC}
-Random sample consensus (RANSAC) is an iterative method which can estimate parameters of the hypothesis given the data. It was first presented by Fischler \cite{fischler1981} with application in scene and image analysis, but it can be used for fitting arbitrary hypothesis. The most significant advantage of this algorithm is its robustness to outliers. The major drawback of this method is its high time complexity when fitting hypotheses to noisy data with a large number of samples. The whole iterative process is described in the algorithm \ref{alg:ransac}, where \textbf{x} is the observed data, \textbf{C} is the maximized cost and $\bm{\theta}$ are the parameters of the hypothesis.
+Random sample consensus (RANSAC) is an iterative method which can estimate parameters of the hypothesis given the data. It was first presented by Fischler \cite{fischler1981} with application in scene and image analysis, but it can be used for fitting arbitrary hypothesis. The most significant advantage of this algorithm is its robustness to outliers. The major drawback of this method is its high time complexity when fitting hypotheses to noisy data with a large number of samples. The whole iterative process is described in the algorithm \ref{alg:ransac}, where x is the observed data, $\eta$ is the maximized cost and $\theta$ are the parameters of the hypothesis.
 \begin{algorithm}[]
  \KwData{x}
  \KwResult{best parameters $\theta^*$}
- initialize $\theta, \theta^*, C, C^*$\;
-\While{not stopping\_criterion}{
+ initialize $\theta, \theta^*, \eta, \eta^*$\;
+\While{not stopping\_criterion(x, $\theta$)}{
 	samples = draw\_samples(x)\;
 	$\theta$ = find\_parameters(samples)\;
-	$C$ = compute\_cost(x, $\theta$)\;
-	\If{$C > C^*$}{
-		$C^* = C$\;
+	$\eta$ = compute\_cost(x, $\theta$)\;
+	\If{$\eta > \eta^*$}{
+		$\eta^* = \eta$\;
 		$\theta^* = \theta$\;
 	}
 } 
@@ -158,10 +158,10 @@ z
 \end{bmatrix}
 + \vec{t},
 \end{equation}
-where $R$ is $3\times3$ the rotation matrix and $t$ is a $1\times3$ translation vector between coordinate frames. Similarly the transformation can be done in homogenous coordinates by merging translation and rotation into one matrix $T$:
+where $R$ is $3\times3$ the rotation matrix and $\vec{t}$ is a $1\times3$ translation vector between coordinate frames. Similarly the transformation can be done in homogenous coordinates by merging translation and rotation into one matrix $T$:
 \begin{equation}
 \begin{bmatrix}
-\vec{x}^\prime \\
+\vec{x^\prime} \\
 1
 \end{bmatrix}
 =

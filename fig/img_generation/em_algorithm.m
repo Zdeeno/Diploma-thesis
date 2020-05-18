@@ -46,18 +46,20 @@ grid on
 xlim([-10, 10]);
 ylim([-10, 10]);
 title("EM algorithm initialization", 'fontsize', 15);
-xlabel("Distance (m)", 'fontsize', 15)
-ylabel("Distance (m)", 'fontsize', 15)
+xlabel("x [m]", 'fontsize', 15)
+ylabel("y [m]", 'fontsize', 15)
+sum_x = 0;
+sum_y = 0;
 sum_ax = 0;
 sum_ay = 0;
-m1 = 0;
-m2 = 0;
 for i = 1:4
-    m1 = m1 + (sum(a{i}(:, 1).*x{i}(:, 1))) / (sum(a{i}(:, 1)));
-    m2 = m2 + (sum(a{i}(:, 2).*x{i}(:, 2))) / (sum(a{i}(:, 2)));
+    sum_x = sum_x + sum(a{i}(:, 1).*x{i}(:, 1));
+    sum_y = sum_y + sum(a{i}(:, 2).*x{i}(:, 2));
+    sum_ax = sum_ax + sum(a{i}(:, 1));
+    sum_ay = sum_ay + sum(a{i}(:, 2));
 end
-mean(1) = m1/4;
-mean(2) = m2/4;
+mean(1) = sum_x/sum_ax;
+mean(2) = sum_y/sum_ay;
 
 sum_x = 0;
 sum_y = 0;
@@ -79,8 +81,8 @@ for epoch = 1:1000
     sum_ay = 0;
     
     for i = 1:4
-        m1 = m1 + (sum(a{i}(:, 1).*x{i}(:, 1))) / (sum(a{i}(:, 1)));
-        m2 = m2 + (sum(a{i}(:, 2).*x{i}(:, 2))) / (sum(a{i}(:, 2)));
+        sum_x = sum_x + sum(a{i}(:, 1).* (x{i}(:, 1) - vec(1)*k(i)));
+        sum_y = sum_y + sum(a{i}(:, 2).* (x{i}(:, 2) - vec(2)*k(i)));
         sum_ax = sum_ax + sum(a{i}(:, 1));
         sum_ay = sum_ay + sum(a{i}(:, 2));
     end
@@ -125,9 +127,8 @@ grid on
 xlim([-2, 8]);
 ylim([-2, 8]);
 title("EM algorithm result", 'fontsize', 15);
-xlabel("Distance (m)", 'fontsize', 15)
-ylabel("Distance (m)", 'fontsize', 15)
-
+xlabel("x [m]", 'fontsize', 15)
+ylabel("y [m]", 'fontsize', 15)
 mean
 phi
 
@@ -176,7 +177,7 @@ likelihood
 plot(phi, likelihood, "LineWidth", 2)
 grid on
 title("Likelihood with respect to \phi", 'fontsize', 13)
-xlabel("\phi (rad)", 'fontsize', 13)
+xlabel("x (rad)", 'fontsize', 13)
 ylabel("Likelihood", 'fontsize', 13)
 
 

@@ -26,7 +26,7 @@ Algorithm performance is influenced by the correct setup of constants $C$ and $S
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.43]{fig/segments}
-\caption[Line segmentation visualization]{RViz visualization of line segmentation. In the figure is evident that the bricks are well detected. This detection is done from $\approx3$m. There is visible one false positive detection behind the brick piles on a tree.}
+\caption[Line segmentation visualization]{RViz visualization of line segmentation. In the figure is evident that the bricks are well detected. This detection is done approximately from distance of $3$m. There is visible one false positive detection behind the brick piles on a tree.}
 \label{fig:segments}
 \end{figure}
 
@@ -74,7 +74,7 @@ When these conditions are met, the hypothesis is declared as the pile and pushed
 As shown in Figure \ref{fig:flowchart}, the last step of the detection pipeline is pattern fitting. It is also visible that there are two types of input into this last step. Each input is used for a different type of pattern fitting. In the previous two sections, it was described how to generate candidates with different levels of confidence. This section describes how the candidates can be used for generating actual positions and how information about the spatial distribution of bricks can be exploited for the detection. From Figure \ref{fig:piledef} is known the exact position of each pile and even each brick. The pattern in which are bricks stacked has three degrees of freedom - position $(x, y)$ and rotation $\phi$. The goal of the pattern fitting is to find the values of these parameters in the map frame.
 
 \subsection{Brick fitting}
-The first type of fitting is using detected 3D positions of individual bricks obtained in a pile detector. The pattern defines the position of each brick, which can be detected by the lidar sensor. The next step is to generate a hypothesis that aligns this pattern with the measured positions of bricks. This step utilizes the RANSAC algorithm. Firstly we draw two different bricks from the detected set of bricks. Secondly, the correspondences are used to find the transformation - two correspondences are enough to generate the hypothesis (rotation matrix $R$ and translation vector $t$). The brick types (colors) and brick $z$ positions are used as the correspondences. Also, we know that the distance between corresponding pairs should match. Otherwise, it would be incorrect correspondence. Lastly, we measure the cost of the hypothesis. When the bricks are stacked into the pattern with reasonable precision, it is possible to fit the pile with average brick error down to $\pm 3$cm. After such an observation, we set the inlier distance $d_{inlier}$ to $5$cm. The algorithm is stopped after a certain number of iterations. The result is passed only if all detected bricks are inliers.
+The first type of fitting is using detected 3D positions of individual bricks obtained in a pile detector. The pattern defines the position of each brick, which can be detected by the lidar sensor. The next step is to generate a hypothesis that aligns this pattern with the measured positions of bricks. This step utilizes the RANSAC algorithm. Firstly we draw two different bricks from the detected set of bricks. Secondly, the correspondences are used to find the transformation - two correspondences are enough to generate the hypothesis (rotation matrix $\bm{R}$ and translation vector $\vec{t}$). The brick types (colors) and brick $z$ positions are used as the correspondences. Also, we know that the distance between corresponding pairs should match. Otherwise, it would be incorrect correspondence. Lastly, we measure the cost of the hypothesis. When the bricks are stacked into the pattern with reasonable precision, it is possible to fit the pile with average brick error down to $\pm 3$cm. After such an observation, we set the inlier distance $d_{inlier}$ to $5$cm. The algorithm is stopped after a certain number of iterations. The result is passed only if all detected bricks are inliers.
 
 \subsubsection{Hypothesis ambiguity}
 We cannot properly test the hypothesis when there are not enough bricks found. In addition, we can see the pile from behind, which renders two different patterns to match. For this reason, is required at least five detected red bricks even to start the brick fitting. As shown in Figure \ref{fig:ambiguity}, even with four detected red bricks can be hypothesis easily fitted incorrectly. All conditions which can start fitting the hypothesis from front view are listed below:
@@ -94,7 +94,7 @@ For view from behind is sufficient only the last condition.
 \subsection{Cluster fitting}
 The second type of fitting polls the clusters from the symbolic map and utilizes the confidence of clusters and their spatial distribution. For RANSAC algorithm would be hypothesis using only four clusters too sparse to fit reliably. Because of this reason is the cluster fitting done by the EM algorithm. As in pile detection, multivariate Gaussian distribution is used to represent the pile, but this time, the model takes into account relationships between positions of the piles. We define the probability model as follows:
 \begin{equation}
-P(\vec{x}_m) = \mathcal{N}_m(\vec{x}_m; \vec{\mu} + k_m\vec{v}; \bm{\Sigma}),
+P(\vec{x}_m) = \mathcal{N}_m(\vec{x}_m; \vec{\mu} + k_m\vec{v}; \bm{\Sigma_m}),
 \label{eq:prob}
 \end{equation}
 where $m$ is pile (color) index and $M$ is absolute number of colors, $\vec{x}_m$ is measurement of color $m$, $\vec{\mu}$ is mean value of whole model, $\bm{\Sigma_m}$ is covariance matrix, $k_m$ is scalar multiplier unique for each pile and $\vec{v}$ is defined as:
@@ -109,7 +109,7 @@ where $\phi$ is the rotation of the model. This definition of the model ensures 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.55]{fig/model_mnd.eps}
-	\caption[Hypothesis ambiguity]{Example of probability density function which can be described as model \ref{eq:prob}. This particular model was created using $\vec{k}_{pile}$ from the Table \ref{tab:constants}, $\mu = [0, 0]$, $\phi$ = 0 and $\bm{\Sigma} = 0.3\bm{E}$, where $\bm{E}$ is identity matrix.}
+	\caption[Hypothesis ambiguity]{Example of probability density function which can be described as model \ref{eq:prob}. This particular model was created using $\vec{k}_{pile}$ from the Table \ref{tab:constants}, $\mu = [0, 0]$, $\phi$ = 0 and $\bm{\Sigma} = 0.3\bm{E}$, where $\bm{E}$ is identity matrix of size $2$.}
 	\label{fig:mnd}
 \end{figure}
 
@@ -208,11 +208,11 @@ Whole map exploration is described in the algorithm \ref{alg:exploration}. The w
 		raise\_arm()\;
 		do\_camera\_detection()\;
 		fold\_arm()\;
-		\If{has\_all\_objects or waypoints.empty()}{
+		\If{has\_all\_objects() or waypoints.empty()}{
 			done = True\;	
 		}
 	}
-	\If{not has\_all\_objects}{
+	\If{not has\_all\_objects()}{
 		go\_to(get\_strongest\_candidate())\;
 	}
 	\caption{Algorithm to explore whole map.}
@@ -226,7 +226,7 @@ Modified clustering is visible in algorithm \ref{alg:clustering}. Input points m
 
 How the point-cloud coloring and final detection looks like is shown in Figure  \ref{fig:colors}. Since the robot stacked all of these bricks, their relative position should be known. Whole stacking is a predefined sequence of movements, and thus we can add each placed brick into the list of stacked bricks with its relative position to place where stacking started. These known positions can be used to generate hypothesis which can be fitted with the RANSAC algorithm in the same way as during the pattern fitting. 
 
-When we use colors for the segmentation, it is crucial to choose the right color space. During the experiments, it was much easier to distinguish between green and blue color in LAB color space than in HSV color space. The robot is not capable of carrying orange bricks, so it was not necessary to segment the orange color, which is problematic because it can be easily confused with red color. This part of detection is not discussed any further because it was more important to localize the initial position of UGV bricks, and placing more than one load of bricks was not achievable in the given timeframe.
+When we use colors for the segmentation, it is crucial to choose the right color space. During the experiments, it was much easier to distinguish between green and blue color in LAB color space than in HSV color space. Although the LAB color space is more computationally intensive, it is preferred for color segmentation \cite{wang2014}. The robot is not capable of carrying orange bricks, so it was not necessary to segment the orange color, which is problematic because it can be easily confused with red color. This part of detection is not discussed any further because it was more important to localize the initial position of UGV bricks, and placing more than one load of bricks was not achievable in the given timeframe.
 
 \begin{algorithm}[H]
 	\KwData{points}

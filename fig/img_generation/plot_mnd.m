@@ -18,8 +18,8 @@ end
 
 caxis([min(y(:))-0.5*range(y(:)),max(y(:))])
 axis([-5 5 -2.5 2.5 0 0.8])
-xlabel('x [m]')
-ylabel('y [m]')
-zlabel('Probability Density')
+xlabel('x [m]', 'fontsize', 13)
+ylabel('y [m]', 'fontsize', 13)
+zlabel('Probability Density', 'fontsize', 13)
 
-title("Hypothesis probability density");
+title("Hypothesis probability density", 'fontsize', 13);
