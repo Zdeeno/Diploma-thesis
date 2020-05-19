@@ -27,7 +27,7 @@ This thesis is focused on the second challenge, specifically on the ground robot
 \begin{figure}[H]
 
 \centering
-\includegraphics[scale=0.35]{fig/brick_sample.png}
+\includegraphics[scale=0.33]{fig/brick_sample.png}
 \caption[Bricks definition]{Colors and dimensions of the bricks provided by the organizer.}
 \label{fig:brickdef}
 
@@ -74,7 +74,7 @@ For the sake of completeness, it is necessary to describe what exact equipment w
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{fig/husky.png}
+\includegraphics[scale=0.275]{fig/husky.png}
 \caption[UGV robot setup]{Clearpath Husky A200 adjusted for the second challenge.}
 \label{fig:husky}
 
@@ -104,8 +104,8 @@ Precision [m]                     & $\pm0.03$ \\
 \end{table}
 
 \section{Software}
-The operating system which is installed on the Intel NUC hard drive is Ubuntu 18.04. All necessary subroutines for controlling the robot are run by the Robot Operating System (ROS) \cite{ros}. That is a flexible framework for operating various robots or multi-robot systems. It offers many different tools and packages which can vastly simplify development, debugging, and deploying of any robotic platform. ROS is written in C++ but offers bindings to other modern languages such as Python or Ruby. Our work is implemented in C++ because it achieves the best performance in terms of execution time and it has the best community support. ROS precisely defines how the files must be structured within the package. ROS also offers a high encapsulation level where each executable is run as a node that can communicate with other nodes using the predefined protocols. The protocols are defined in the form of ROS messages, which are used in two different ways. One possibility is to transmit the data via the ROS topics. Topics represent the classical producer-consumer scheme, where multiple listeners can be joined to a single topic, whereas the publisher doesn't receive anything. The other possibility is a so-called service server that returns something on each request. The most important node is the ROS core, which runs the ROS master and the parameter server. ROS also provides advanced logging and package ROS bag, which can record any specified topic and save it for replay.
+The operating system which is installed on the Intel NUC hard drive is Ubuntu 18.04. All necessary subroutines for controlling the robot are run by the Robot Operating System (ROS) \cite{ros}. That is a flexible framework for operating various robots or multi-robot systems. It offers many different tools and packages which can vastly simplify development, debugging, and deploying of any robotic platform. ROS is written in C++ but offers bindings to other modern languages such as Python or Ruby. Our work is implemented in C++ because it achieves the best performance in terms of execution time and it has the best community support. ROS precisely defines how the files must be structured within the package. ROS also offers a high encapsulation level where each executable is run as a node that can communicate with other nodes using the predefined protocols. The protocols are defined in the form of ROS messages, which are used in two different ways. One possibility is to transmit the data via the ROS topics. Topics represent the classical producer-consumer scheme, where multiple listeners can be joined to a single topic, whereas the publisher doesn't receive anything. The other possibility is a so-called service server that returns something on each request. The most important node is the ROS core, which runs the ROS master and the parameter server. ROS also provides advanced logging and package \textit{rosbag}, which can record any specified topic and save it for replay.
 
-It is vital to know the precise location of the robot inside the arena. For localization, the robot uses a probabilistic Monte Carlo method, which is sometimes called the particle filtering. This algorithm fuses data from range finder and odometry and creates multiple hypotheses (particles) of the robot's position and rotation. The quality of each hypothesis is evaluated by approximating posterior probability within a standard Bayesian formulation of the localization problem \cite{dellaert1999} \cite{thrun2000}. When is the robot started in a new environment, it is first necessary to create the map. There is a ROS package called Gmapping, which does can simultaneously create the map and navigate itself using the particle filter. When the map is created, it is not further necessary to run the Gmapping node because only the localization is needed. For the Monte Carlo localization on a predefined map is used ROS package called AMCL.
+It is vital to know the precise location of the robot inside the arena. For localization, the robot uses a probabilistic Monte Carlo method, which is sometimes called the particle filtering. This algorithm fuses data from range finder and odometry and creates multiple hypotheses (particles) of the robot's position and rotation. The quality of each hypothesis is evaluated by approximating posterior probability within a standard Bayesian formulation of the localization problem \cite{dellaert1999} \cite{thrun2000}. When is the robot started in a new environment, it is first necessary to create the map. There is a ROS package called Gmapping, which can simultaneously create the map and navigate itself using the particle filter. When the map is created, it is not further necessary to run the Gmapping node because only the localization is needed. For the Monte Carlo localization on a predefined map is used ROS package called AMCL.
 
 \newpage
