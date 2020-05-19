@@ -47,7 +47,7 @@ At the beginning of ROS bag the robot drives around the piles in approximate dis
 \section{Precision of detections}
 Although all the objects of interest were correctly localized, it is visible in the Table \ref{tab:seg_precision} that the line segmentation produces high number of false positive candidates. That is caused mainly by incorrect filtering of ground plane. This behavior is further discussed in the next section. Very advantageous is that the EM algorithm converges well, until the correct clusters has at least slightly higher confidence than the false positives. It is no surprise that the most frequently detected brick is the red one, because it is the smallest of bricks and there is higher number of red bricks than bricks of any other color. Similarly the blue bricks are the rarest in the arena and blue pile is also the hardest one to detect as shown in the Table \ref{tab:pile_precision}. The UAV destination wall has so low number of false positive detections mainly because the filtered segment has size of $4$m, which is much larger segment than any brick. It is unlikely to obtain such a large false positive segment in relatively empty arena.
 
-The pile detector is very reliable which confirms that the conditions described in section \ref{sec:pile_detector} were chosen correctly. Both false positive detections were probably caused by pedestrians inside the arena. Finally the RANSAC detector produced zero false positives detections, that is mainly thanks to our very strict conditions to even start RANSAC fitting and also thanks to very low inlier distance. This level of precision is achieved mainly because we prefer precision over the detection range, which is the lowest of all detectors. In the experiment the robot drove much closer to the pile from behind, so in the Table \ref{tab:RANSAC_precision} is visible that the rear model was applied more times. It is noteworthy that the EM algorithm was able to fit the hypothesis correctly even when only the individual detection methods were used.
+The pile detector is very reliable which confirms that the conditions described in section \ref{sec:pile_detector} were chosen correctly. Both false positive detections were probably caused by pedestrians inside the arena. Finally the RANSAC detector produced zero false positives detections, that is mainly thanks to our very strict conditions to even start RANSAC fitting and also thanks to very low inlier distance. This level of precision is achieved mainly because we prefer precision over the detection range, which is the lowest of all detectors. In the experiment the robot drove much closer to the pile from behind, so in the Table \ref{tab:RANSAC_precision} is visible that the rear model was applied more times. It is noteworthy that the EM algorithm was able to fit the hypothesis correctly even when only the individual detection methods were used. Note that in the tables are considering only detections inside the arena. All the detections outside the arena are filtered out by the symbolic map.
 
 \begin{table}[H]
 	\centering
@@ -113,7 +113,7 @@ On the other hand, Pattern fitting is also using the EM algorithm, but it polls 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.55]{fig/time.eps}
+	\includegraphics[scale=0.65]{fig/time.eps}
 	\caption[Experiment time comparison]{Relative comparison of mean execution time. Whole detection pipeline took on average $4.3$ms (CPU Intel i7 7700k).}
 	\label{fig:time}
 \end{figure}

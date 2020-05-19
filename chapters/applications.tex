@@ -12,7 +12,7 @@ Detection is divided into three parts. All three parts are discussed in the next
 \label{fig:flowchart}
 \end{figure}
 
-It can be seen that the symbolic map has two types of inputs. The main advantage of this approach is that it extends the lidar detection range. As discussed in the previous section, the used lidar has a low vertical resolution of only 16 layers. Thus the bricks are often visible in only one layer of lidar scan. If we use only one scan, there is a high probability of false-positive measurements. On the one hand, we can decrease the occurrence of false positives by adding other lidar layers into the detection process. But on the other hand, two layers are available only from a distance smaller than 6 meters, and that decreases the detection range. Therefore we exploited both approaches. One layer line segmentation for generating the candidates with low confidence and multilayer pile detector providing high-quality estimates. 
+It can be seen that the symbolic map has two types of inputs. The main advantage of this approach is that it extends the lidar detection range. As discussed in the previous section, the used lidar has a low vertical resolution of only 16 layers. Thus the bricks are often visible in only one layer of lidar scan. If we use only one scan, there is a high probability of false-positive measurements. On the one hand, we can decrease the occurrence of false positives by adding other lidar layers into the detection process. But on the other hand, two layers are available only from a distance smaller than $6$m, and that decreases the detection range. Therefore we exploited both approaches. One layer line segmentation for generating the candidates with low confidence and multilayer pile detector providing high-quality estimates. 
 
 It is important to obtain positions in the map frame, but for grasping is also necessary to introduce an algorithm which can give real-time feedback in robot frame to align itself with the brick pile. When the robot is too close to pile it is impossible to get feedback from lidar because the bricks can be occluded or they can be closer than lidar minimal range. Therefore the robot needs camera servoing for fine alignment during the brick pickup.
 
@@ -39,8 +39,8 @@ There are further requirements for a hypothesis to be declared as a pile after t
 \begin{itemize}
 \item There are at least two unique heights ($z$ positions).
 \item There are at least two unique places ($(x,y)$ positions).
-\item Difference between maximal and minimal height is less than the pile height.
-\item Pile center is inside the arena.
+\item Difference between maximal and minimal height is smaller than the pile height.
+\item Center of the pile is inside the arena.
 \end{itemize}
 When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The second condition does not apply to the orange pile, because this pile is much higher than others. The whole procedure is shown in the algorithm \ref{alg:pile_detection}.
 \begin{algorithm}[]
