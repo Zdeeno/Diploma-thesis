@@ -1,4 +1,5 @@
 \chapter{Conclusion}
+\label{ch:conclusion}
 The goal of the thesis was to implement a detection algorithm for MBZIRC 2020 contest. More specifically, the algorithm should detect the model of bricks for the second challenge of the contest, for the detection was used Velodyne VLP-16 lidar sensor. 
 
 A simple line extraction algorithm was applied to find individual bricks. At the beginning of the challenge were the bricks stacked into the piles, so we applied the EM algorithm to find parameters of individual piles. Further, the piles were always placed with fixed relative positions. Since all the piles together are too large objects for detection in a single measurement, it was necessary to create a global model. In our case, the global model was the symbolic map.
