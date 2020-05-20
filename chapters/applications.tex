@@ -37,13 +37,13 @@ Algorithm performance is influenced by the correct setup of constants $C$ and $S
 The pile detector uses one of the simplest versions of the EM algorithm. As a model for the pile is applied 2D multivariate Gaussian distribution with variance fixed to one. Although this model is not an accurate description of the detection probability, it has other advantages already discussed in previous chapters. It is easy to work with, and it converges to the global optimum very well. Only the mean value is optimized, and it should converge into the center of the pile. The stopping criterion for the algorithm is solely the number of iterations. The robot is a realtime system, and there are strict demands for meeting a deadline. 
 
 There are further requirements for a hypothesis to be declared as a pile after the optimization is done. We look around the proposed center in a one-meter radius, and we inspect all bricks found in this area. All the following conditions must be fulfilled for segments in a pile:
-\begin{itemize}
+\begin{enumerate}[label=(\alph*)]
 \item There are at least two unique heights ($z$ positions).
 \item There are at least two unique places ($(x,y)$ positions).
 \item Difference between maximal and minimal height is smaller than the pile height.
 \item Center of the pile is inside the arena.
-\end{itemize}
-When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The second condition does not apply to the orange pile, because this pile is much higher than others. The whole procedure is shown in the algorithm \ref{alg:pile_detection}.
+\end{enumerate}
+When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange pile, because this pile is much higher than others. The whole procedure is shown in the algorithm \ref{alg:pile_detection}.
 \begin{algorithm}[]
  \KwData{segments}
  \KwResult{pile\_position}
@@ -79,12 +79,12 @@ The first type of fitting is using detected 3D positions of individual bricks ob
 
 \subsubsection{Hypothesis ambiguity}
 We cannot properly test the hypothesis when there are not enough bricks found. In addition, we can see the pile from behind, which renders two different patterns to match. For this reason, is required at least five detected red bricks even to start the brick fitting. As shown in Figure \ref{fig:ambiguity}, even with four detected red bricks can be hypothesis easily fitted incorrectly. All conditions which can start fitting the hypothesis from front view are listed below:
-\begin{itemize}
+\begin{enumerate}[label=(\alph*)]
 \item 5 red bricks detected.
 \item 3 green bricks detected.
 \item 4 bricks of at least two colors detected.
-\end{itemize}
-For view from behind is sufficient only the last condition.
+\end{enumerate}
+For view from behind is sufficient only the condition (c).
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{fig/ambiguous.png}
