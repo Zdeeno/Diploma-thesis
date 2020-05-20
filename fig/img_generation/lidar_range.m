@@ -8,10 +8,10 @@ N = acos(1 - (a.^2 ./ (2.*b.^2)))./alpha;
 plot(b, N, "linewidth", 1.5);
 grid on;
 xlim([2 20]);
-xlabel("Distance [m]", 'fontsize', 13);
-ylabel("Number of hits", 'fontsize', 13);
-title("Horizontal range analysis", 'fontsize', 13);
-legend({"hits"}, 'fontsize', 13);
+xlabel("Distance [m]", 'fontsize', 15);
+ylabel("Number of hits", 'fontsize', 15);
+title("Horizontal range analysis", 'fontsize', 15);
+legend({"hits"}, 'fontsize', 15);
 
 
 %% vertical
@@ -24,7 +24,7 @@ N = acos(1 - (a.^2 ./ (2.*b.^2)))./alpha;
 plot(b, N, "linewidth", 1.5);
 grid on;
 xlim([1 10]);
-xlabel("Distance [m]", 'fontsize', 13);
-ylabel("Number of hits", 'fontsize', 13);
-title("Vertical range analysis", 'fontsize', 13);
-legend({"hits"}, 'fontsize', 13);
+xlabel("Distance [m]", 'fontsize', 15);
+ylabel("Number of hits", 'fontsize', 15);
+title("Vertical range analysis", 'fontsize', 15);
+legend({"hits"}, 'fontsize', 15);

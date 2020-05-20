@@ -1,8 +1,8 @@
 \chapter{Methods}
 \label{ch:methods}
-In this chapter the methods that can be applied to the detection of the bricks are described. Multiple methods are presented. Each method is supposed to tackle different part of the detection process. The most of these methods are several decades old and they have proven to be very valuable in certain fields of computer science. Only a brief description is provided, and all methods are presented in a general form. 
+In this chapter the methods that can be applied to the detection of the bricks are described. Multiple methods are presented. Each method is supposed to tackle different part of the detection process. The most of these methods are several decades old and they have proven to be very valuable in certain fields of computer science. Only a brief description is provided, and all methods are presented in a general form. First section of this chapter does not provide a description of any method, but rather shows our reasoning behind usage multiple methods with different range of detection.
+ 
 \section{Lidar detection range analysis}
-It is useful to know a possible range of detection based on the lidar sensor. This range influences how the robot explores the arena and influences the choice of used methods. Higher the detection range, the lower number of waypoints is necessary to explore the whole arena. There is a limited time for exploration because brick pickup and brick placement take much time. The speed of pickup and placement is limited mainly by the speed of the Kinova arm. We estimate the maximal range using the Figure \ref{fig:range}.
 
 \begin{figure}[H]
 	\centering
@@ -10,6 +10,8 @@ It is useful to know a possible range of detection based on the lidar sensor. Th
 	\caption[Lidar range study]{Visualization of rays hitting the red brick.}
 	\label{fig:range}
 \end{figure}
+
+It is useful to know a possible range of detection based on the lidar sensor. This range influences how the robot explores the arena and influences the choice of used methods. Higher the detection range, the lower number of waypoints is necessary to explore the whole arena. There is a limited time for exploration because brick pickup and brick placement take much time. The speed of pickup and placement is limited mainly by the speed of the Kinova arm. We estimate the maximal range using the Figure \ref{fig:range}.
 
 Angle $\alpha$ is the resolution of lidar known from table \ref{tab:lidar}. Only the maximal range is calculated, thus angle $\beta = 90\degree$. The cosine theorem can be used to obtain the distance between points on the brick:
 \begin{equation}

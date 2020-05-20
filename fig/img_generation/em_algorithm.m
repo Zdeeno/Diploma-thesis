@@ -177,7 +177,7 @@ likelihood
 plot(phi, likelihood, "LineWidth", 2)
 grid on
 title("Likelihood with respect to \phi", 'fontsize', 13)
-xlabel("x (rad)", 'fontsize', 13)
+xlabel("x [rad]", 'fontsize', 13)
 ylabel("Likelihood", 'fontsize', 13)
 
 

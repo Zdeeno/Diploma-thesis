@@ -19,6 +19,7 @@ At the beginning of \textit{rosbag} the robot drives around the piles in approxi
 
 \begin{table}[H]
 	\centering
+	\caption{List of constants used in experiment.}
 	\begin{tabular}{cc}
 		\toprule
 		Constant & Value \\
@@ -40,7 +41,6 @@ At the beginning of \textit{rosbag} the robot drives around the piles in approxi
 		\end{bmatrix}$ \\
 		\bottomrule
 	\end{tabular}
-	\caption{List of constants used in experiment.}
 	\label{tab:constants}
 \end{table}
 
@@ -51,24 +51,25 @@ The pile detector is very reliable which confirms that the conditions described 
 
 \begin{table}[H]
 	\centering
+	\caption{Precision of line segmentation.}
 	\begin{tabular}{ccccccc}
 		\toprule
 		Type &\quad& True &\quad& False &\quad& Precision \\
 		\midrule
 		Red &\quad& 174 &\quad& 70 &\quad&71.3\% \\
-		Green &\quad& 57 &\quad& 19 &\quad& 75\% \\
+		Green &\quad& 57 &\quad& 19 &\quad& 75.0\% \\
 		Blue &\quad& 24 &\quad& 63 &\quad& 27.5\% \\
 		Orange &\quad& 32 &\quad& 20 &\quad& 61.5\% \\
 		Wall &\quad& 280 &\quad& 11 &\quad& 96.2\% \\
 		\bottomrule
 	\end{tabular}
-	\caption{Precision of line segmentation.}
 	\label{tab:seg_precision}
 \end{table}
 
 
 \begin{table}[H]
 	\centering
+	\caption{Precision of pile detection.}
 	\begin{tabular}{ccccccc}
 		\toprule
 		Type &\quad& True &\quad& False &\quad& Precision \\
@@ -79,13 +80,13 @@ The pile detector is very reliable which confirms that the conditions described 
 		Orange &\quad& 17 &\quad& 0 &\quad& 100\% \\
 		\bottomrule
 	\end{tabular}
-	\caption{Precision of pile detection.}
 	\label{tab:pile_precision}
 \end{table}
 
 
 \begin{table}[H]
 	\centering
+	\caption{Precision of RANSAC detector.}
 	\begin{tabular}{ccccccc}
 		\toprule
 		Type &\quad& True &\quad& False &\quad& Precision \\
@@ -94,13 +95,12 @@ The pile detector is very reliable which confirms that the conditions described 
 		Rear model &\quad& 9 &\quad& 0 &\quad& 100\% \\
 		\bottomrule
 	\end{tabular}
-	\caption{Precision of RANSAC detector.}
 	\label{tab:RANSAC_precision}
 \end{table}
 
 
 \section{Ground Segmentation}
-As we already mentioned, the ground segmentation applied in this experiment was not sufficient enough. The slope inside the area was responsible for a high number of false-positive detections. The easiest possible ground segmentation method was used in the detector because we did not expect such harsh terrain. The height of lidar above the ground was $0.45$m, so all points with $z$ coordinate lower than $-0.4$m were filtered out of the measurement. This method can segment only wholly flat ground, which was not the case of the arena.
+As we already mentioned, the ground segmentation applied in this experiment was not sufficient enough. The slope inside the area was responsible for a high number of false-positive detections. The easiest possible ground segmentation method was used in the detector because we did not expect such harsh terrain. The height of lidar above the ground was $0.45$m, so all points with $z$ coordinate lower than $-0.4$m were filtered out from the measurement. This method can segment only wholly flat ground, which was not the case of the arena.
 
 Ground segmentation is a popular subject of study. There are various published papers concerning this topic. Some methods are incorporating machine learning \cite{velas2018}. The usage of machine learning again involves evaluating neural networks, and that can be inefficient on CPU. There are also purely algorithmic methods that perform well even in rough terrain \cite{phuong2019}. These methods do not incorporate any knowledge about the environment, which is not entirely our case, because the arena terrain is known in advance.
 
@@ -109,12 +109,27 @@ We had available advanced mapping device (Leica BLK 360), which is able to creat
 \section{Time benchmark}
 The execution time of each detection algorithm is highly dependent on input size. The line segmentation time complexity grows quadratically with the number of samples \cite{hershberger2000}. It is the most time-consuming part of the whole pipeline because, unlike the pattern fitting, it must be done each iteration. The time complexity of the pile detector (EM algorithm) and the RANSAC algorithm is linear, but both methods usually have a low number of inputs, so the final execution time is very short. 
 
-On the other hand, Pattern fitting is also using the EM algorithm, but it polls the whole history of detections from the symbolic map. Hence it has a much higher number of inputs, and it takes a long time. In our implementation was the pattern fitting ran on every received pointcloud, but that is not necessary because the whole method is deterministic, and the results are different only after a significant change in the symbolic map. Relative lengths of execution is visualized in the Figure \ref{fig:time}. We have compared the measured execution time to lidar frequency, and the detector frequency is significantly lower than the sensor's frequency, so the detection pipeline is not a limiting factor for the robot.
+On the other hand, Pattern fitting is also using the EM algorithm, but it polls the whole history of detections from the symbolic map. Hence it has a much higher number of inputs, and it takes a long time. In our implementation was the pattern fitting ran on every received pointcloud, but that is not necessary because the whole method is deterministic, and the results are different only after a significant change in the symbolic map. Relative lengths of execution is visualized in the Figure \ref{fig:time}. We have compared the measured execution time to lidar frequency, and the detector frequency is significantly higher than the sensor's frequency, so the detection pipeline is not a limiting factor for the robot.
+
+None of the methods is parallelizable and whole pipeline runs on one core of CPU in serial manner. In table \ref{tab:benchmark} is shown setup which ran the pipeline for benchmark. Whole detection took on average $4.3$ms.
+
+\begin{table}[H]
+	\centering
+	\caption{Setup for benchmark.}
+	\begin{tabular}{ccc}
+		\toprule
+		System &\quad& Ubuntu 18.04 \\
+		CPU &\quad& Intel i7-7700k  \\
+		RAM &\quad& 8GB \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:benchmark}
+\end{table}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.65]{fig/time.eps}
-	\caption[Experiment time comparison]{Relative comparison of mean execution time. Whole detection pipeline took on average $4.3$ms (CPU Intel i7 7700k).}
+	\caption[Experiment time comparison]{Relative comparison of mean execution time.}
 	\label{fig:time}
 \end{figure}
 
