@@ -36,7 +36,7 @@ Finally, we can plot a function of the number of rays $N$ with respect to distan
 	\label{fig:horizontal_hits}
 \end{figure}
 
-In Figure \ref{fig:horizontal_hits} it is visible that the horizontal resolution of the lidar is not limiting factor of the range. Even from $10$m, the lidar is able to hit red brick more than $15$ times. On the other hand, the Figure \ref{fig:vertical_hits} shows that less than two lidar layers would hit the pile of bricks with a height of $0.4$m from a distance greater than $6$m. Furthermore, this is the best-case scenario analysis where $\beta$ is a right angle, which rarely happens in reality, but we opted this value of beta because it is simplifies the calculation and it is still reasonably precise estimate.
+In Figure \ref{fig:horizontal_hits} it is visible that the horizontal resolution of the lidar is not limiting factor of the range. Even from $10$m, the lidar is able to hit red brick more than $15$ times. On the other hand, the Figure \ref{fig:vertical_hits} shows that less than two lidar layers would hit the pile of bricks with a height of $0.4$m from a distance greater than $6$m. Furthermore, this is the best-case scenario analysis where $\beta$ is a right angle, which rarely happens in reality, but we opted this value of beta because it simplifies the calculation and it is still reasonably precise estimate.
 
 \begin{figure}[H]
 	\centering
@@ -75,7 +75,7 @@ merge\_parallel(line\_segments)\;
 Expectation-maximization (EM) algorithm is an iterative process that can find parameters of a specified statistical model based on incomplete data. One of the most used statistical description for the EM algorithm is the Gaussian mixture model. This model is particularly useful because it emerges in many real-world situations, and it is easy to maximize. As the name of the algorithm suggests, it repeats the expectation and maximization step. Each iteration of the algorithm should improve the likelihood of the model until the terminating criterion is met. The termination criterion can simply be the number of iterations, or the algorithm can be stopped when the model is not improving anymore. Although we are discussing mainly the Gaussian distribution, the EM algorithm can also be used for other distributions from exponential family \cite{dempster1977}. The usage of the EM algorithm for the classification of 3D lidar data is not an entirely novel approach. Gaussian mixtures were already used for terrain recognition \cite{lalonde2006}.
  
 \subsection{Maximization}
-For maximization step, the maximal likelihood estimate is used weighted by $\gamma$ from expectation step. For parameters of Gaussian distribution $\mathcal{N}(\mu, \sigma)$ and number of samples $N$ maximization looks as follows:
+For maximization step, the maximal likelihood estimate (MLE) is used weighted by $\gamma$ from expectation step. For parameters of Gaussian distribution $\mathcal{N}(\mu, \sigma)$ and number of samples $N$ maximization looks as follows:
 \begin{equation}
 \mu = \sum_{n = 1}^{N} \gamma_n x_n, \\
 \end{equation}

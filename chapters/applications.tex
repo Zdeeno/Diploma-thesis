@@ -13,21 +13,21 @@ Detection is divided into three parts. All three parts are discussed in the next
 \label{fig:flowchart}
 \end{figure}
 
-It can be seen that the symbolic map has two types of inputs. The main advantage of this approach is that it extends the lidar detection range. As discussed in the previous section, the used lidar has a low vertical resolution of only 16 layers. Thus the bricks are often visible in only one layer of lidar scan. If we use only one scan, there is a high probability of false-positive measurements. On the one hand, we can decrease the occurrence of false positives by adding other lidar layers into the detection process. But on the other hand, two layers are available only from a distance smaller than $6$m, and that decreases the detection range. Therefore we exploited both approaches. One layer line segmentation for generating the candidates with low confidence and multilayer pile detector providing high-quality estimates. 
+It can be seen that the symbolic map has two types of inputs. The main advantage of this approach is that it extends the lidar detection range. As discussed in the previous section, the used lidar has a low vertical resolution of only 16 layers. Thus the bricks are often visible in only one layer of lidar scan. If we use only one scan, there is a high probability of false-positive measurements. On the one hand, we can decrease the occurrence of false positives by adding other lidar layers into the detection process. But on the other hand, two layers are available only from a distance smaller than $6$m and that decreases the detection range. Therefore we exploited both approaches. One layer line segmentation for generating the candidates with low confidence and multilayer pile detector providing high-quality estimates. 
 
-It is important to obtain positions in the map frame, but for grasping is also necessary to introduce an algorithm which can give real-time feedback in robot frame to align itself with the brick pile. When the robot is too close to pile it is impossible to get feedback from lidar because the bricks can be occluded or they can be closer than lidar minimal range. Therefore the robot needs camera servoing for fine alignment during the brick pickup.
+It is important to obtain positions in the map frame, but for grasping it is also necessary to introduce an algorithm which can give a real-time feedback to the robot frame to align itself with the brick pile. When the robot is too close to the pile it is impossible to get feedback from lidar because the bricks can be occluded or they can be closer than the lidar minimal range. Therefore the robot needs a camera servoing for fine alignment during the brick pickup.
 
 \section{Line segmentation}
-For line segmentation, the IEPF algorithm is used, which is very similar to the one described in algorithm \ref{alg:segmentation}. Only the final merging of parallel segments is omitted because it can connect two bricks into one. After retrieving the segments, filtering based on the segment size is done. It is possible to assign the color to the segment because each brick type has unique size. For this reason must be defined new constant $max\_err$ which thresholds out detections of incorrect size. An example of lidar measurement with extracted and filtered lines is in Figure \ref{fig:segments}. 
+For line segmentation, the IEPF algorithm is used, which is very similar to the one described in algorithm \ref{alg:segmentation}. Only the final merging of parallel segments is omitted because it can connect two bricks into one. After retrieving the segments, filtering based on the segment size is done. It is possible to assign the color to the segment because each brick type has unique size. For this reason a new constant $max\_err$ must be defined which thresholds out detections of incorrect size. An example of lidar measurement with extracted and filtered lines is in Figure \ref{fig:segments}. 
 
-Algorithm performance is influenced by the correct setup of constants $C$ and $S$ (clustering and splitting distance). If we choose too high C, the algorithm could join two bricks into one segment. As described in Figure \ref{fig:piledef}, the distance between two bricks of the same color is 10 cm. Therefore the clustering distance must always be less than 10 cm. If the clustering distance is too low, one brick can be unintentionally divided into many segments, and without merging at the end, are these segments useless. It is necessary to bear in mind that the lidar precision, as shown in Table \ref{tab:lidar} is $\pm3$ cm, so any clustering with a distance of similar magnitude would be highly affected by sensor noise. The found segments are transformed into the map frame and passed to the symbolic map as low confidence detections. Further, are segments passed to pile detector which can filter out false-positive detections.
+Algorithm performance is influenced by the correct setup of constants $C$ and $S$ (clustering and splitting distance). If we choose C too high, the algorithm could join two bricks into one segment. As described in Figure \ref{fig:piledef}, the distance between two bricks of the same color is $0.1$m. Therefore the clustering distance must always be less than $0.1$m. If the clustering distance is too low, one brick can be unintentionally divided into many segments, and without merging at the end, these segments are useless. It is necessary to bear in mind that the lidar precision, as shown in Table \ref{tab:lidar} is $\pm0.03$m, so any clustering with a distance of similar magnitude would be highly affected by sensor noise. The found segments are transformed into the map frame and passed to the symbolic map as low confidence detections. The segments are further passed to pile detector which can filter out false-positive detections.
 
 \hspace{8mm}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.43]{fig/segments}
-\caption[Line segmentation visualization]{RViz visualization of line segmentation. In the figure is evident that the bricks are well detected. This detection is done approximately from distance of $3$m. There is visible one false positive detection behind the brick piles on a tree.}
+\caption[Line segmentation visualization]{Visualization of line segmentation. In the figure it is evident that the bricks are well detected. This detection is done approximately from the distance of $3$m. There is one false positive detection visible behind the brick piles on a tree.}
 \label{fig:segments}
 \end{figure}
 
@@ -43,7 +43,7 @@ There are further requirements for a hypothesis to be declared as a pile after t
 \item Difference between maximal and minimal height is smaller than the pile height.
 \item Center of the pile is inside the arena.
 \end{enumerate}
-When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange pile, because this pile is much higher than others. The whole procedure is shown in the algorithm \ref{alg:pile_detection}.
+When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When at least one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange pile, because this pile is much higher than others. The whole procedure is shown in the algorithm \ref{alg:pile_detection}.
 \begin{algorithm}[]
  \KwData{segments}
  \KwResult{pile\_position}
@@ -72,28 +72,28 @@ When these conditions are met, the hypothesis is declared as the pile and pushed
 
 
 \section{Pattern fitting}
-As shown in Figure \ref{fig:flowchart}, the last step of the detection pipeline is pattern fitting. It is also visible that there are two types of input into this last step. Each input is used for a different type of pattern fitting. In the previous two sections, it was described how to generate candidates with different levels of confidence. This section describes how the candidates can be used for generating actual positions and how information about the spatial distribution of bricks can be exploited for the detection. From Figure \ref{fig:piledef} is known the exact position of each pile and even each brick. The pattern in which are bricks stacked has three degrees of freedom - position $(x, y)$ and rotation $\phi$. The goal of the pattern fitting is to find the values of these parameters in the map frame.
+As shown in Figure \ref{fig:flowchart}, the last step of the detection pipeline is pattern fitting. It is also visible that there are two types of input into this last step. Each input is used for a different type of pattern fitting. In the previous two sections, it was described how to generate candidates with different levels of confidence. This section describes how these candidates can be used for generating actual positions and how information about the spatial distribution of bricks can be exploited for the detection. The exact position of each pile and even each brick is visible in Figure \ref{fig:piledef}. The pattern in which the bricks are stacked has three degrees of freedom - position $(x, y)$ and rotation $\phi$. The goal of the pattern fitting is to find the values of these parameters in the map frame.
 
 \subsection{Brick fitting}
-The first type of fitting is using detected 3D positions of individual bricks obtained in a pile detector. The pattern defines the position of each brick, which can be detected by the lidar sensor. The next step is to generate a hypothesis that aligns this pattern with the measured positions of bricks. This step utilizes the RANSAC algorithm. Firstly we draw two different bricks from the detected set of bricks. Secondly, the correspondences are used to find the transformation - two correspondences are enough to generate the hypothesis (rotation matrix $\bm{R}$ and translation vector $\vec{t}$). The brick types (colors) and brick $z$ positions are used as the correspondences. Also, we know that the distance between corresponding pairs should match. Otherwise, it would be incorrect correspondence. Lastly, we measure the cost of the hypothesis. When the bricks are stacked into the pattern with reasonable precision, it is possible to fit the pile with average brick error down to $\pm 3$cm. After such an observation, we set the inlier distance $d_{inlier}$ to $5$cm. The algorithm is stopped after a certain number of iterations. The result is passed only if all detected bricks are inliers.
+The first type of fitting uses detected 3D positions of individual bricks obtained in a pile detector. The pattern defines the position of each brick, which can be detected by the lidar sensor. The next step is to generate a hypothesis that aligns this pattern with the measured positions of bricks. This step utilizes the RANSAC algorithm. Firstly we draw two different bricks from the detected set of bricks. Secondly, the correspondences are used to find the transformation - two correspondences are enough to generate the hypothesis (rotation matrix $\bm{R}$ and translation vector $\vec{t}$). The brick types (colors) and brick $z$ positions are used as the correspondences. Also, we know that the distance between corresponding pairs should match. Otherwise, it would be incorrect correspondence. Lastly, we measure the cost of the hypothesis. When the bricks are stacked into the pattern with reasonable precision, it is possible to fit the pile with average brick error down to $\pm 3$cm. After such an observation, we set the inlier distance $d_{inlier}$ to $5$cm. The algorithm is stopped after a certain number of iterations. The result is passed only if all detected bricks are inliers.
 
 \subsubsection{Hypothesis ambiguity}
-We cannot properly test the hypothesis when there are not enough bricks found. In addition, we can see the pile from behind, which renders two different patterns to match. For this reason, is required at least five detected red bricks even to start the brick fitting. As shown in Figure \ref{fig:ambiguity}, even with four detected red bricks can be hypothesis easily fitted incorrectly. All conditions which can start fitting the hypothesis from front view are listed below:
+We cannot properly test the hypothesis when there are not enough bricks found. In addition, we can see the pile from behind, which renders two different patterns to match. For this reason, at least five detected red bricks are required to start the brick fitting. As shown in Figure \ref{fig:ambiguity}, even with four detected red bricks the hypothesis can be easily fitted incorrectly. All conditions which can start fitting the hypothesis from front view are listed below:
 \begin{enumerate}[label=(\alph*)]
 \item 5 red bricks detected.
 \item 3 green bricks detected.
 \item 4 bricks of at least two colors detected.
 \end{enumerate}
-For view from behind is sufficient only the condition (c).
+For view from behind only the condition (c) is sufficient.
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{fig/ambiguous.png}
-\caption[Hypothesis ambiguity]{In black rectangles are visualized two possible hypothesis which can be generated by four red bricks in the intersection of rectangles. This is top view of detection from the front, so it is not visible that all red bricks are in two layers.}
+\caption[Hypothesis ambiguity]{Two possible hypothesis which can be generated by four red bricks in their intersection are visualized in the black rectangles. This is top view of detection from the front, so it is not visible that all red bricks are in two layers.}
 \label{fig:ambiguity}
 \end{figure}
 
 \subsection{Cluster fitting}
-The second type of fitting polls the clusters from the symbolic map and utilizes the confidence of clusters and their spatial distribution. For RANSAC algorithm would be hypothesis using only four clusters too sparse to fit reliably. Because of this reason is the cluster fitting done by the EM algorithm. As in pile detection, multivariate Gaussian distribution is used to represent the pile, but this time, the model takes into account relationships between positions of the piles. We define the probability model as follows:
+The second type of fitting polls the clusters from the symbolic map and utilizes the confidence of clusters and their spatial distribution. For RANSAC algorithm, a hypothesis using only four clusters would be too sparse to fit reliably. Because of this reason, the cluster fitting is done by the EM algorithm. As in pile detection, multivariate Gaussian distribution is used to represent the pile, but this time, the model takes into account relationships between positions of the piles. We define the probability model as follows:
 \begin{equation}
 P(\vec{x}_m) = \mathcal{N}_m(\vec{x}_m; \vec{\mu} + k_m\vec{v}; \bm{\Sigma_m}),
 \label{eq:prob}
@@ -114,22 +114,22 @@ where $\phi$ is the rotation of the model. This definition of the model ensures 
 	\label{fig:mnd}
 \end{figure}
 
- Now we want to obtain the position and rotation of such a model based on real measurements. There is a closed-form solution for maximizing both terms, which can be found using the maximum likelihood estimate. For mean value is derivation very similar to multivariate Gaussian:
+ Now we want to obtain the position and rotation of such a model based on real measurements. There is a closed-form solution for maximizing both terms, which can be found using the maximum likelihood estimate. For mean value, the derivation is very similar to multivariate Gaussian:
 \begin{align}
 \frac{\partial \log\mathcal{L} }{\partial \vec{\mu}_m} &=  \bm{\Sigma}^{-1}_m \sum_{n = 1}^{N_m} (\vec{x}_{m_n} - \vec{\mu} - k_m \vec{v}), \\
 \vec{\mu_m} &= \sum_{n = 1}^{N_m} \frac{\vec{x}_{m_n} - k_m \vec{v}}{N_m}.
 \end{align}
-Further is necessary to derive MLE for rotation $\phi$ which is hidden inside vector $\vec{v}$. For simplicity is now the matrix equation split into one part for each of two dimensions.  
+Further, it is necessary to derive MLE for rotation $\phi$ which is hidden inside vector $\vec{v}$. For simplicity the matrix equation is now split into one part for each of two dimensions:
 \begin{align}
 \frac{\partial \log\mathcal{L}_x }{\partial \phi_m} &= \frac{1}{\sigma^2_x} \sum_{n=1}^{N_m} (x_{m_n, x} - \mu_x - k_{m, x} \cos \phi) \left( -k_{m,x} \sin \phi\right),  \\
 \frac{\partial \log\mathcal{L}_y }{\partial \phi_m} &= \frac{1}{\sigma^2_y} \sum_{n=1}^{N_m} (x_{m_n, y} - \mu_y - k_{m, y} \sin \phi) k_{m,y} \cos \phi.
 \end{align}
-Likelihood derivative is now set equal to zero to find the extremes for each dimension.
+Likelihood derivative is now set equal to zero to find the extremes for each dimension:
 \begin{align}
 \cos \phi_m &= \frac{1}{k_{m, x}N_m} \sum_{n = 1}^{N_m} \left(  x_{m_n, x} - \mu_x \right)  , \\ 
 \sin \phi_m &=  \frac{1}{k_{m, y}N_m} \sum_{n = 1}^{N_m} \left(  x_{m_n, y} - \mu_y \right)  .
 \end{align}
-Now it is possible divide one equation by the other, use basic relationship of trigonometric functions, and derive final expression for maximizing the rotation $\phi$:
+Now it is possible to divide one equation by the other, use basic relationship of trigonometric functions, and derive final expression for maximizing the rotation $\phi$:
 \begin{align}
 \phi_m &= \arctan \left( \frac{\dfrac{\sum_{n = 1}^{N_m} \left( x_{m_n, y} - \mu_y \right)}{k_{m, y}N_m} }{ \dfrac{\sum_{n = 1}^{N_m} \left( x_{m_n, x} - \mu_x \right)}{k_{m, x}N_m} }\right).
 \end{align}
@@ -152,7 +152,7 @@ Method is demonstrated in the Figure \ref{fig:em_pattern}. Expectation is calcul
 
 	\end{subfigure}
 	
-	\caption[EM pattern fitting]{In the pictures is visualised pattern fitting using EM algorithm. On the left is algorithm initialized with parameters $\vec{x}=(0, 0)$ and $\phi=0$. Algorithm estimate is marked by stars. Points are generated by sampling multivariete Gaussian distribution. Model was sampled with parameters $\vec{x}=(3, 3)$ and $\phi=2$ to create desired pattern of points. Positions of sampled piles are marked as circles. At the end of process are parameters found correctly.}
+	\caption[EM pattern fitting]{In the pictures, the pattern fitting using EM algorithm is visualized. On the left there is algorithm initialized with parameters $\vec{x}=(0, 0)$ and $\phi=0$. Algorithm estimate is marked by stars. Points are generated by sampling multivariete Gaussian distribution. Model was sampled with parameters $\vec{x}=(3, 3)$ and $\phi=2$ to create desired pattern of points. Positions of sampled piles are marked as circles. At the end of the procedure parameters are found correctly.}
 	\label{fig:em_pattern}
 \end{figure}
 
@@ -161,7 +161,7 @@ The unimodality of the model's likelihood was disrupted by adding the rotation p
 
 One way to avoid local optima is the deterministic annealing, which influences how the expectation is used in maximization step \cite{ueda1998}. Another way how to escape local optimum is to apply a perturbations to parameters of the model. In our case, it could be, for example, rotating the model by $180\degree$. A different approach would be a population-based em algorithm with multiple initializations or informed initialization. The latter is easily applicable in our case because the confidences of clusters could be used in the expectation step. 
 
-Because we have also the formulas for gradient, it is also possible to use an arbitrary gradient ascend method instead of an MLE to maximize the likelihood of the model. The advantage of using the MLE for maximization step is that the algorithm converge very fast and the computation is usually much faster than the computation of any gradient method.
+Because we have also the formulas for gradient, it is also possible to use an arbitrary gradient ascend method instead of an MLE to maximize the likelihood of the model. The advantage of using the MLE for maximization step is that the algorithm converges very fast and the computation is usually much faster than the computation of any gradient method.
 
 \begin{figure}[H]
 	\centering
@@ -185,18 +185,18 @@ It is vital to emphasize on proper arena exploration. If all the interest points
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.38]{fig/detection_range.png}
-	\caption[Detection ranges]{In the picture we see the range of each type of detection. Fit the complete hypothesis using RANSAC method (green) requires high number of segments in piles, so the range is around $3$m. For detection of the pile (blue) is required just few segments - the detection range is roughly $5$m. Camera can obtain candidates for checker pattern (red) from maximal distance of $8$m, that is the limit distance for are exploration. From even bigger distance can be generated candidates for bricks (yellow) using the lidar sensor. The upper boundary can be even higher but we set it manually to $15$m to reduce the number of false positive detections.}
+	\caption[Detection ranges]{In the picture we see the range of each type of detection. Fitting the complete hypothesis with RANSAC method (green) requires high number of detected segments in piles, so the range is low - around $3$m. For detection of the pile (blue) just few detected segments are required, so the detection range longer - around $5$m. Camera can obtain candidates for checker pattern (red) from maximal distance of $8$m, that is the limit distance for exploration. From even bigger distance candidates for bricks (yellow) using the lidar sensor can be generated. The upper boundary can be even higher but we set it manually to $15$m to reduce the number of false positive detections.}
 	\label{fig:detection_range}
 \end{figure}
 
-The waypoints of exploration movement should be generated so that circles cover the area of the whole arena with an 8-meter radius. Generated waypoints in the arena are visualized in the Figure \ref{fig:map_annot}. On each waypoint, the robot must stop, raise the arm, and look around with the camera. There are several reasons why camera detection cannot be done while moving. First of all, the arm can not be raised to the highest possible position while the robot is moving. Otherwise, it could get stuck or damaged. In addition, the motion blur of camera would reduce the detection range even further. During camera detection, the robot must stay still, but the lidar detections can be done while moving. That can improve the detection range and speed because the robot can do measurement from much more different places. 
+The waypoints of exploration movement should be generated so that circles cover the area of the whole arena with an $8$m radius. Generated waypoints in the arena are visualized in the Figure \ref{fig:map_annot}. On each waypoint, the robot must stop, raise the arm, and look around with the camera. There are several reasons why camera detection cannot be done while moving. First of all, the arm can not be raised to the highest possible position while the robot is moving. Otherwise, it could get stuck or damaged. In addition, the motion blur of camera would reduce the detection range even further. During camera detection, the robot must stay still, but the lidar detections can be done while moving. That can improve the detection range and speed because the robot can do measurement from much more different places. 
 
 Whole map exploration is described in the algorithm \ref{alg:exploration}. The waypoints are ordered prior to this algorithm. How to order them is beyond the scope of this thesis. In algorithm is visible that the method \textbf{start\_lidar\_detection} is non-blocking service which just turns on the detector, whereas the method \textbf{do\_camera\_detection} is blocking service which waits until the arm looks around with camera and finishes the detection. This method is also the most time consuming part of the loop.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.23]{fig/map_annotation.png}
-	\caption[Generated waypoints]{Purple waypoints are places where the robot should stop and look around. Green circles are camera ranges from the corresponding place. In this figure are the waypoints generated so that there is no unexplored area. That is usually not necessary since the objects of interest have non-negligible size. It is thus possible to further reduce the number of waypoints.}
+	\caption[Generated waypoints]{Purple waypoints are places where the robot should stop and look around. Green circles are camera ranges from the corresponding place. In this figure, the waypoints are generated so that there is no unexplored area. That is usually not necessary since the objects of interest have non-negligible size. It is thus possible to further reduce the number of waypoints.}
 	\label{fig:map_annot}
 \end{figure}
 
@@ -223,9 +223,9 @@ Whole map exploration is described in the algorithm \ref{alg:exploration}. The w
 \end{algorithm}
 
 \section{Stacked bricks detection}
-It is evident that, when the bricks are stacked close to each other without any significant gap, it is impossible to distinguish which bricks the lidar detects. This issue was already addressed in previous chapters. It is desired to know what color particular lidar point has. That is done by the camera to lidar registration. Since we know the relative position of the camera to lidar and the intrinsic camera matrix, it is no problem to assign a color to each point. The colors are further utilized during the clustering. We can now split clusters not only using the spatial data, but the splitting can be based on the color difference of the subsequent points. 
+It is evident that when the bricks are stacked close to each other without any significant gap, it is impossible to distinguish which bricks the lidar detects. This issue was already addressed in previous chapters. It is desirable to know what color particular lidar point has. That is done by the camera to lidar registration. Since we know the relative position of the camera to lidar and the intrinsic camera matrix, it is not a problem to assign a color to each point. The colors are further utilized during the clustering. We can now split clusters not only using the spatial data, but the splitting can be based on the color difference of the subsequent points. 
 
-Modified clustering is visible in algorithm \ref{alg:clustering}. Input points must be ordered layer from lidar pointcloud. Constant $C$ is clustering distance, $T$ is color clustering distance and $min\_size$ is minimal cluster size - this has high influence on range of brick candidate generation. Note that the color distance is computed from the whole cluster mean to a new point. When the new point is added, the color of the cluster should be recalculated. This is important to reduce camera noise influence on the final form of clusters. When this running-mean technique is used, the clusters are split only in sharp color transitions. 
+Modified clustering is visible in algorithm \ref{alg:clustering}. Input points must be from a single layer of pointcloud and ordered by yaw. Constant $C$ is clustering distance, $T$ is color clustering distance and $min\_size$ is minimal cluster size - this has high influence on range of brick candidate generation. Note that the color distance is computed from the whole cluster mean to a new point. When the new point is added, the color of the cluster should be recalculated. This is important to reduce camera noise influence on the final form of clusters. When this running-mean technique is used, the clusters are split only in sharp color transitions. 
 
 How the point-cloud coloring and final detection looks like is shown in Figure  \ref{fig:colors}. Since the robot stacked all of these bricks, their relative position should be known. Whole stacking is a predefined sequence of movements, and thus we can add each placed brick into the list of stacked bricks with its relative position to place where stacking started. These known positions can be used to generate hypothesis which can be fitted by the RANSAC algorithm in the same way as during the pattern fitting. 
 
@@ -267,7 +267,7 @@ When we use colors for the segmentation, it is crucial to choose the right color
 		\includegraphics[scale=0.18]{fig/colors_lidar}
 	\end{subfigure}
 	
-	\caption[Colored pointcloud detections]{Detection of bricks using color based clustering. On the left is image from camera pointing at built wall. Black dots are points captured by the lidar sensor. On the right is shown final detection in map frame. All of the bricks are correctly detected, even though they are poorly painted and the environment is quite challenging, especially with the green grass on the ground.}
+	\caption[Colored pointcloud detections]{Detection of bricks using color based clustering. On the left: Image from camera pointing at built wall. Black dots are points captured by the lidar sensor. On the right: Final detection in map frame. All of the bricks are correctly detected, even though they are poorly painted and the environment is quite challenging, especially with the green grass on the ground.}
 	\label{fig:colors}
 \end{figure}
 
