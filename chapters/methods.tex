@@ -1,6 +1,6 @@
 \chapter{Methods}
 \label{ch:methods}
-In this chapter, the methods that can be applied to the detection of the bricks are described. Multiple methods are presented. Each method is supposed to tackle a different part of the detection process. Most of these methods are several decades old, and they have proven to be valuable in specific fields of computer science. Only a brief description is provided, and all methods are presented in a general form. The first section of this chapter does not provide a description of any method, but instead, it shows our reasoning behind the usage of multiple methods with different ranges of detection.
+In this chapter, the methods that can be applied to the detection of the bricks are described. Multiple methods are presented. Each method is supposed to tackle a different part of the detection process. Most of these methods are several decades old, and they have proven to be valuable in specific fields of computer science. Only a brief description is provided, and all methods are presented in a general form. The first section in this chapter shows our reasoning behind the usage of multiple methods with different ranges of detection.
  
 \section{Lidar detection range analysis}
 
@@ -11,7 +11,7 @@ In this chapter, the methods that can be applied to the detection of the bricks 
 	\label{fig:range}
 \end{figure}
 
-It is useful to know a possible range of detection based on the lidar sensor. This range influences how the robot explores the arena and influences the choice of used methods. Higher the detection range, the lower number of waypoints is necessary to explore the whole arena. There is a limited time for exploration because brick pickup and brick placement take much time. The speed of pickup and placement is limited mainly by the speed of the Kinova arm. We estimate the maximal range using Figure \ref{fig:range}.
+It is useful to know a possible range of detection based on the lidar sensor. This range influences how the robot explores the arena and influences the choice of used methods. Higher the detection range, the lower number of waypoints is necessary to explore the whole arena. There is a limited time for exploration because brick pickup and brick placement take much time. The speed of pickup and placement is limited mainly by the speed of the Kinova arm. Estimate of the maximal range in shown Figure \ref{fig:range}.
 
 Angle $\alpha$ is the resolution of lidar known from table \ref{tab:lidar}. Only the maximal range is calculated, thus angle $\beta = 90\degree$. The cosine theorem can be used to obtain the distance between points on the brick:
 \begin{equation}
@@ -36,7 +36,7 @@ Finally, we can plot a function of the number of rays $N$ with respect to distan
 	\label{fig:horizontal_hits}
 \end{figure}
 
-In Figure \ref{fig:horizontal_hits}, it is visible that the horizontal resolution of the lidar is not limiting factor of the range. Even from $10$m, the lidar is able to hit red brick more than $15$ times. On the other hand, Figure \ref{fig:vertical_hits} shows that less than two lidar layers would hit the pile of bricks with a height of $0.4$m from a distance greater than $6$m. Furthermore, this is the best-case scenario analysis where $\beta$ is a right angle, which rarely happens in reality, but we opted for this value of beta because it simplifies the calculation, and it is still a reasonably precise estimate.
+In Figure \ref{fig:horizontal_hits}, it is visible that the horizontal resolution of the lidar is not limiting factor of the range. Even from $10$m, the lidar is able to hit red brick more than $15$ times. On the other hand, Figure \ref{fig:vertical_hits} shows that less than two lidar layers would hit the pile of bricks with a height of $0.4$m from a distance greater than $6$m. Furthermore, this is the best-case scenario analysis where $\beta$ is a right angle, which rarely happens in reality, but we opted for this value of $\beta$ because it simplifies the calculation, and it is still a reasonably precise estimate.
 
 \begin{figure}[H]
 	\centering
@@ -47,7 +47,7 @@ In Figure \ref{fig:horizontal_hits}, it is visible that the horizontal resolutio
 
 \section{Lidar data processing}
 
-Brick detection is based on the extraction of straight lines from lidar data. Several methods can be used to achieve this goal. One of the most popular algorithms for line extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1976}. A simple version of this algorithm for point-cloud processing is described in Algorithm \ref{alg:segmentation}, where C is clustering distance, and S is splitting distance. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example, just the method of fitting a line to the cluster can vary a lot. The method of least squares is often used, but as a simple method as connecting endpoints of the cluster could be used. When the latter method is applied, the algorithm is usually referred to as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation, the points are iterated in each layer one by one. When the distance of the following points is too high, we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In comparison to other line extraction algorithms is the split and merge algorithm, one of the best performings in terms of precision and computational complexity \cite{nguyen2006}.
+Brick detection is based on the extraction of straight lines from lidar data. Several methods can be used to achieve this goal. One of the most popular algorithms for line extraction is currently split and merge algorithm. Initially was this algorithm proposed for image segmentation by Horowitz and Pavlidis \cite{horowitz1976}. A simple version of this algorithm for pointcloud processing is described in Algorithm \ref{alg:segmentation}, where C is clustering distance, and S is splitting distance. There are many implementations of this algorithm which differ mainly in a way how they compute some particular steps of the algorithm. For example, just the method of fitting a line to the cluster can vary a lot. The method of least squares is often used, but as a simple method as connecting endpoints of the cluster could be used. When the latter method is applied, the algorithm is usually referred to as Iterative End Point Fit (IEPF) \cite{siadat1997}. For the cluster creation, the points are iterated in each layer one by one. When the distance of the following points is too high, we split the cluster. Every cluster is then further recursively split based on the most distant point from the fitted line. In comparison to other line extraction algorithms is the split and merge algorithm, one of the best performings in terms of precision and computational complexity \cite{nguyen2006}.
 \begin{algorithm}[]
  \KwData{pointcloud}
  \KwResult{line\_segments}
@@ -83,7 +83,7 @@ For the maximization step, the maximal likelihood estimate (MLE) is used weighte
 \sigma = \sum_{n = 1}^{N}\gamma_n (x_n - \mu)^2 .
 \end{equation}
 
-A critical assumption for the convergence of the algorithm is that its likelihood with respect to the estimated parameter must be concave. This can be easily proved by computing the second derivative of the likelihood function. For example, for the mean value of distribution  $\mu$, it is easy to show that the second derivative of likelihood is always negative, which means that the function has no local optima:
+A critical assumption for the convergence of the algorithm is that its likelihood with respect to the estimated parameter must be concave. This can be easily proved by computing the second derivative of the likelihood function. For example, for the mean value of distribution  $\mu$, it is easy to show that the second derivative of likelihood is always negative, which means that the function has only global optimum:
 \begin{align}
 \mathcal{L} &= \prod_{n=1}^N \mathcal{N}(x_n, \mu, \sigma), \nonumber \\
 \frac{\partial \log \mathcal{L}}{\partial \mu} &= \frac{1}{\sigma^2} \sum_{n = 1}^{N} (x_n - \mu), \\
@@ -106,18 +106,18 @@ There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and 
 \end{equation}
 
 \subsection{Algorithm}
-How to implement a generic version of the EM algorithm on sampled data is shown in Algorithm \ref{alg:em}, where \textbf{x} is the observed data samples. All relevant calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step, so during the initialization, we set $\alpha_n = 1$. If some prior information about the model's parameters is available, they can be set during the initialization, and the algorithm can be started with the expectation step. This informed initialization can remarkably reduce the number of iterations and sometimes even an outcome of the algorithm.
 \begin{algorithm}[]
- \KwData{x}
- \KwResult{parameters $\theta$}
- set all $\alpha_n$ = 1\;
-\While{not stopping\_criterion(x, $\theta$)}{
-	$\theta$ = maximization(x, $\alpha$)\;
-	$\alpha$ = expectation(x, $\theta$)\;
-} 
- \caption{Pseudocode shows how to implement the EM algorithm.}
- \label{alg:em}
+	\KwData{x}
+	\KwResult{parameters $\theta$}
+	set all $\alpha_n$ = 1\;
+	\While{not stopping\_criterion(x, $\theta$)}{
+		$\theta$ = maximization(x, $\alpha$)\;
+		$\alpha$ = expectation(x, $\theta$)\;
+	} 
+	\caption{Expectation Maximization.}
+	\label{alg:em}
 \end{algorithm}
+How to implement a generic version of the EM algorithm on sampled data is shown in Algorithm \ref{alg:em}, where \textbf{x} is the observed data samples. All relevant calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step, so during the initialization, we set $\alpha_n = 1$. If some prior information about the model's parameters is available, they can be set during the initialization, and the algorithm can be started with the expectation step. This informed initialization can remarkably reduce the number of iterations and sometimes even an outcome of the algorithm.
 
 
 \section{RANSAC}
@@ -135,14 +135,14 @@ Random sample consensus (RANSAC) is an iterative method which can estimate param
 		$\theta^* = \theta$\;
 	}
 } 
- \caption{Pseudocode shows how to implement the RANSAC algorithm.}
+ \caption{Random Sample Consensus.}
  \label{alg:ransac}
 \end{algorithm}
 
 The number of drawn samples in \textbf{draw\_samples} must be equal or higher than the number of degrees of freedom of the hypothesis. After drawing the samples method, \textbf{find\_parameters} that assign the correspondences between sampled data and the hypothesis. The correspondences are used to obtain the parameters of the hypothesis. Then the algorithm is evaluating the quality of the hypothesis by applying the hypothesis to the whole dataset. An arbitrary cost function can do this quality estimate. A common practice is to define some metrics in our domain and use a threshold value to obtain the number of samples that fit the hypothesis. These samples are often referred to as inliers. Stopping criterion is usually met when the probability of sampling a better hypothesis is lower than a specified threshold. This section describes just the basic version of the algorithm. Many improvements to the RANSAC algorithm was proposed since 1981 \cite{chum2008}.
 
 \subsection{Tentative Correspondences}
-The tentative correspondences can help us to choose better samples from the data to generate a better hypothesis. It is necessary to define some function which measures the similarity between data and hypothesis. The data which has a higher similarity to the hypothesis is then chosen with higher probability. It is also possible to completely ban correspondences with low similarity. Given the typical application in scene analysis, the similarity is usually computed by comparing keypoint descriptors.
+The tentative correspondences can help us to choose better samples from the data to generate a better hypothesis. It is necessary to define some function which measures the similarity between data and hypothesis. The sample which has a higher similarity to the hypothesis is then chosen with higher probability. It is also possible to completely ban correspondences with low similarity. Given the typical application in scene analysis, the similarity is usually computed by comparing keypoint descriptors.
 
 \section{Global model and transformations}
 One of the goals of this thesis is to develop a global model that can efficiently store and update the positions of interest points. This global model is in the map coordinate frame. The localization of the robot is essential for the precise global model. Every detection must be transformed from the coordinate frame of the sensor to the coordinate frame of the map. Transformation can be easily done using matrix multiplication:
@@ -153,14 +153,14 @@ y^\prime \\
 z^\prime 
 \end{bmatrix}
 =
-R \begin{bmatrix}
+\bm{R} \begin{bmatrix}
 x \\
 y \\
 z
 \end{bmatrix}
 + \vec{t},
 \end{equation}
-where $R$ is $3\times3$ the rotation matrix, and $\vec{t}$ is a $1\times3$ translation vector between coordinate frames. Similarly, the transformation can be done in homogenous coordinates by merging translation and rotation into one matrix $T$:
+where $\bm{R}$ is $3\times3$ the rotation matrix, and $\vec{t}$ is a $1\times3$ translation vector between coordinate frames. Similarly, the transformation can be done in homogenous coordinates by merging translation and rotation into one matrix $T$:
 \begin{equation}
 \begin{bmatrix}
 \vec{x^\prime} \\
@@ -187,7 +187,7 @@ where $q_A$ is quaternion in coordinate frame $A$, $q_B$ is quaternion in coordi
 When all detections are transformed into the map frame, we can add them to a symbolic map. The symbolic map is storing the positions of all interest points and makes up the global model of the arena. Every object added to the symbolic map has a float number, which indicates the confidence of detection. When there is a new detection within a specific range from an object already stored in the symbolic map, a new object is not added, but only the confidence is increased. The range in which we just update the confidence is denoted as $cluster\_size$. This approach creates clusters of interest points of different types. All interest points can be polled from the symbolic map, and the robot can make decisions based on the confidence of such an interest point. The symbolic map also checks whether the inserted object is located inside the arena. Otherwise, the object is rejected. One of the features of such a map is that it does not have to rely on measurements just from one sensor and can contain entries based on different types of measurements \cite{majer2019}.
 
 \subsection{Lidar to camera registration}
-As can be seen in Figure \ref{fig:brickdef} (where the bricks are defined) besides the dimensions, another important feature of the bricks is their color. Although the color manifests itself a little bit in reflectivity of the surface, which can be detected by lidar, it is not possible to reliably distinguish the colors using only the lidar sensor. Until there is a gap between the individual bricks, it is possible to detect brick using just the spatial data. Ideally, the robot should be stacking bricks next to each other without any significant gap. Without any information about the color, it is impossible to decide whether the robot is detecting one large brick or several small bricks put together. So for this part of detection, it is necessary to color the point-cloud. Coloring can be done by using the image from Intel RealSense camera and projecting a 3D lidar point-cloud to the camera plane. For this purpose, the pinhole camera model is used. To describe such a model is used intrinsic camera matrix $K$ which consists of intrinsic camera parameters \cite{hartley2017}
+As can be seen in Figure \ref{fig:brickdef} (where the bricks are defined) besides the dimensions, another important feature of the bricks is their color. Although the color manifests itself a little bit in reflectivity of the surface, which can be detected by lidar, it is not possible to reliably distinguish the colors using only the lidar sensor. Until there is a gap between the individual bricks, it is possible to detect brick using just the spatial data. Ideally, the robot should be stacking bricks next to each other without any significant gap. Without any information about the color, it is impossible to decide whether the robot is detecting one large brick or several small bricks put together. So for this part of detection, it is necessary to color the pointcloud. Coloring can be done by using the image from Intel RealSense camera and projecting a 3D lidar pointcloud to the camera plane. For this purpose, the pinhole camera model is used. To describe such a model is used intrinsic camera matrix $K$ which consists of intrinsic camera parameters \cite{hartley2017}
 \begin{equation}
 K = \begin{bmatrix}
 f_x & 0 & c_x \\
@@ -197,7 +197,7 @@ f_x & 0 & c_x \\
 \end{equation}
 where $f_x, f_y$ are focal lengths and $c_x, c_y$ stands for optical center of the camera.
 
-Firstly, it is necessary to transform the whole point-cloud from the lidar coordinate frame to the camera frame. For this purpose, the so-called extrinsic camera parameters are used, which describe where a camera is placed in the lidar coordinate frame. This type of transformation is discussed at the beginning of this section. Secondly, we can use the intrinsic camera parameters to calculate the projection. Note that it is needed to work in a homogenous 2D coordinate system:
+Firstly, it is necessary to transform the whole pointcloud from the lidar coordinate frame to the camera frame. For this purpose, the so-called extrinsic camera parameters are used, which describe where a camera is placed in the lidar coordinate frame. This type of transformation is discussed at the beginning of this section. Secondly, we can use the intrinsic camera parameters to calculate the projection. Note that it is needed to work in a homogenous 2D coordinate system:
 \begin{equation}
 \begin{bmatrix}
 u\\
@@ -210,4 +210,4 @@ y\\
 z
 \end{bmatrix}.
 \end{equation}
-It is possible to decide which coordinates $u,v$ on image plane corresponds to 3D point $x,y,z$ from point-cloud, and assign the color of a specific pixel to the point, using this matrix equality. However, this works only for the simplest pinhole camera model without any distortion of the image. If the lens has non-negligible distortion, this distortion must be included in the camera model. For the description of distortion, the distortion coefficients are used.
+It is possible to decide which coordinates $u,v$ on image plane corresponds to 3D point $x,y,z$ from pointcloud, and assign the color of a specific pixel to the point, using this matrix equality. However, this works only for the simplest pinhole camera model without any distortion of the image. If the lens has non-negligible distortion, this distortion must be included in the camera model. For the description of distortion, the distortion coefficients are used.
