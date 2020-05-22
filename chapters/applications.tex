@@ -43,7 +43,7 @@ There are further requirements for a hypothesis to be declared as a pile after t
 \item The difference between maximal and minimal height is smaller than the pile height.
 \item The center of the pile is inside the arena.
 \end{enumerate}
-When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When at least one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange and blue pile because they have a different structure than the others. The whole procedure is shown in Algorithm \ref{alg:pile_detection}.
+When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When at least one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange and blue pile because they have a different structure than the others. The whole procedure is shown in Algorithm \ref{alg:pile_detection}. The conditions listed above are validated in the method \textbf{is\_pile}.
 \begin{algorithm}[]
  \KwData{segments}
  \KwResult{pile\_position}

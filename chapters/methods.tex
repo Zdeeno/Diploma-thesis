@@ -109,15 +109,15 @@ There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and 
 \begin{algorithm}[]
 	\KwData{x}
 	\KwResult{parameters $\theta$}
-	set all $\alpha_n$ = 1\;
+	set all $\gamma_n = 1/N$\;
 	\While{not stopping\_criterion(x, $\theta$)}{
-		$\theta$ = maximization(x, $\alpha$)\;
-		$\alpha$ = expectation(x, $\theta$)\;
+		$\theta$ = maximization(x, $\gamma$)\;
+		$\gamma$ = expectation(x, $\theta$)\;
 	} 
 	\caption{Expectation Maximization.}
 	\label{alg:em}
 \end{algorithm}
-How to implement a generic version of the EM algorithm on sampled data is shown in Algorithm \ref{alg:em}, where \textbf{x} is the observed data samples. All relevant calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step, so during the initialization, we set $\alpha_n = 1$. If some prior information about the model's parameters is available, they can be set during the initialization, and the algorithm can be started with the expectation step. This informed initialization can remarkably reduce the number of iterations and sometimes even an outcome of the algorithm.
+How to implement a generic version of the EM algorithm on sampled data is shown in Algorithm \ref{alg:em}, where x is the observed data samples. All relevant calculations for Gaussian distribution are described in previous subsections. It is not clear where to start iterating. It is possible to start both with the expectation and with the maximization step, but both parts are dependent on the result of the other one. Here we start with the maximization step, so during the initialization, we set $\gamma_n = \frac{1}{N}$. If some prior information about the model's parameters is available, they can be set during the initialization, and the algorithm can be started with the expectation step. This informed initialization can remarkably reduce the number of iterations and sometimes even an outcome of the algorithm.
 
 
 \section{RANSAC}
