@@ -161,7 +161,7 @@ The unimodality of the model's likelihood was disrupted by adding the rotation p
 
 One way to avoid local optima is the deterministic annealing, which influences how the expectation is used in the maximization step \cite{ueda1998}. Another way how to escape local optimum is to apply perturbations to parameters of the model. In our case, it could be, for example, rotating the model by $180\degree$. A different approach would be a population-based em algorithm with multiple initializations or informed initialization. The latter is easily applicable in our case because the confidences of clusters could be used in the expectation step. 
 
-Because we also have the formulas for gradient, it is also possible to use an arbitrary gradient ascend method instead of an MLE to maximize the likelihood of the model. The advantage of using the MLE for maximization step is that the algorithm converges very fast, and the computation is usually much faster than the computation of any gradient method.
+Because we have the formulas for gradient, it is also possible to use an arbitrary gradient ascend method instead of an MLE to maximize the likelihood of the model. The advantage of using the MLE for maximization step is that the algorithm converges very fast, and the computation is usually much faster than the computation of any gradient method.
 
 \begin{figure}[H]
 	\centering
