@@ -122,24 +122,25 @@ How to implement a generic version of the EM algorithm on sampled data is shown 
 
 \section{RANSAC}
 Random sample consensus (RANSAC) is an iterative method which can estimate parameters of the hypothesis given the data. It was first presented by Fischler \cite{fischler1981} with application in scene and image analysis, but it can be used for fitting arbitrary hypothesis. The most significant advantage of this algorithm is its robustness to outliers. The major drawback of this method is its high time complexity when fitting hypotheses to noisy data with a large number of samples. The whole iterative process is described in Algorithm \ref{alg:ransac}, where x is the observed data, $\eta$ is the maximized cost, and $\theta$ are the parameters of the hypothesis.
-\begin{algorithm}[]
- \KwData{x}
- \KwResult{best parameters $\theta^*$}
- initialize $\theta, \theta^*, \eta, \eta^*$\;
-\While{not stopping\_criterion(x, $\theta$)}{
-	samples = draw\_samples(x)\;
-	$\theta$ = find\_parameters(samples)\;
-	$\eta$ = compute\_cost(x, $\theta$)\;
-	\If{$\eta > \eta^*$}{
-		$\eta^* = \eta$\;
-		$\theta^* = \theta$\;
-	}
-} 
- \caption{Random Sample Consensus.}
- \label{alg:ransac}
-\end{algorithm}
 
-The number of drawn samples in \textbf{draw\_samples} must be equal or higher than the number of degrees of freedom of the hypothesis. After drawing the samples method, \textbf{find\_parameters} that assign the correspondences between sampled data and the hypothesis. The correspondences are used to obtain the parameters of the hypothesis. Then the algorithm is evaluating the quality of the hypothesis by applying the hypothesis to the whole dataset. An arbitrary cost function can do this quality estimate. A common practice is to define some metrics in our domain and use a threshold value to obtain the number of samples that fit the hypothesis. These samples are often referred to as inliers. Stopping criterion is usually met when the probability of sampling a better hypothesis is lower than a specified threshold. This section describes just the basic version of the algorithm. Many improvements to the RANSAC algorithm was proposed since 1981 \cite{chum2008}.
+The number of drawn samples in \textbf{draw\_samples} must be equal or higher than the number of degrees of freedom of the hypothesis. After drawing the samples, method \textbf{find\_parameters} assigns the correspondences between sampled data and the hypothesis. The correspondences are used to obtain the parameters of the hypothesis. Then the algorithm is evaluating the quality of the hypothesis by applying the hypothesis to the whole dataset. An arbitrary cost function can do this quality estimate. A common practice is to define some metrics in our domain and use a threshold value to obtain the number of samples that fit the hypothesis. These samples are often referred to as inliers. Stopping criterion is usually met when the probability of sampling a better hypothesis is lower than a specified threshold. This section describes just the basic version of the algorithm. Many improvements to the RANSAC algorithm was proposed since 1981 \cite{chum2008}.
+
+\begin{algorithm}[]
+	\KwData{x}
+	\KwResult{best parameters $\theta^*$}
+	initialize $\theta, \theta^*, \eta, \eta^*$\;
+	\While{not stopping\_criterion(x, $\theta$)}{
+		samples = draw\_samples(x)\;
+		$\theta$ = find\_parameters(samples)\;
+		$\eta$ = compute\_cost(x, $\theta$)\;
+		\If{$\eta > \eta^*$}{
+			$\eta^* = \eta$\;
+			$\theta^* = \theta$\;
+		}
+	} 
+	\caption{Random Sample Consensus.}
+	\label{alg:ransac}
+\end{algorithm}
 
 \subsection{Tentative Correspondences}
 The tentative correspondences can help us to choose better samples from the data to generate a better hypothesis. It is necessary to define some function which measures the similarity between data and hypothesis. The sample which has a higher similarity to the hypothesis is then chosen with higher probability. It is also possible to completely ban correspondences with low similarity. Given the typical application in scene analysis, the similarity is usually computed by comparing keypoint descriptors.
