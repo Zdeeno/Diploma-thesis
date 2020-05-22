@@ -1,4 +1,4 @@
-%% generate data
+%% There is an implemantation error which worsens the convergence
 clear all;
 center = [3 3];
 real_phi = 2;
