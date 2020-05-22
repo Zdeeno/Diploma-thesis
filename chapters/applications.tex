@@ -27,7 +27,7 @@ Algorithm performance is influenced by the correct setup of constants $C$ and $S
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.43]{fig/segments}
-\caption[Line segmentation visualization]{Visualization of line segmentation. In the figure, it is evident that the bricks are well detected. This detection is done approximately from a distance of $3$m. There is one false positive detection visible behind the brick piles on a tree.}
+\caption[Line segmentation visualization]{Visualization of line segmentation. In the figure, it is evident that the bricks are well detected. This detection is done approximately from a distance of $3$m. There is one false positive detection visible behind the brick piles on a tree. The squares in the grid has $1\si{m}^2$.}
 \label{fig:segments}
 \end{figure}
 
@@ -43,7 +43,7 @@ There are further requirements for a hypothesis to be declared as a pile after t
 \item The difference between maximal and minimal height is smaller than the pile height.
 \item The center of the pile is inside the arena.
 \end{enumerate}
-When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When at least one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange and blue pile because these piles have different structure than the others. The whole procedure is shown in Algorithm \ref{alg:pile_detection}.
+When these conditions are met, the hypothesis is declared as the pile and pushed into the symbolic map with high confidence. When at least one of these conditions is violated, then all the segments in this hypothesis are deleted, and the algorithm runs again until there are no more segments within the hypothesis radius. The condition (b) does not apply to the orange and blue pile because they have a different structure than the others. The whole procedure is shown in Algorithm \ref{alg:pile_detection}.
 \begin{algorithm}[]
  \KwData{segments}
  \KwResult{pile\_position}
@@ -133,7 +133,7 @@ Now it is possible to divide one equation by the other, use the basic relationsh
 \begin{align}
 \phi_m &= \arctan \left( \frac{\dfrac{\sum_{n = 1}^{N_m} \left( x_{m_n, y} - \mu_y \right)}{k_{m, y}N_m} }{ \dfrac{\sum_{n = 1}^{N_m} \left( x_{m_n, x} - \mu_x \right)}{k_{m, x}N_m} }\right).
 \end{align}
-Although the expression can be further simplified, in this form, it is easier to weight each data sample by the expectation $\alpha$. Also, it is necessary to consider the contribution of each color to the pile model. This can be done in two ways. One possibility is to set an equal contribution to each data sample. In our case, this could lead to bias towards the most detected color (usually red). Therefore we set equal contributions to all colors instead of the samples. The final form used in the maximization step looks as follows:
+Although the expression can be further simplified, in this form, it is easier to weight each data sample by the expectation $\gamma$. Also, it is necessary to consider the contribution of each color to the pile model. This can be done in two ways. One possibility is to set an equal contribution to each data sample. In our case, this could lead to bias towards the most detected color (usually red). Therefore we set equal contributions to all colors instead of the samples. The final form used in the maximization step looks as follows:
 \begin{align}
 \vec{\mu} =& \sum_{m=1}^M \dfrac{1}{M}\sum_{n = 1}^{N_m}  \vec{\gamma}_{m_n} \left( \vec{x}_{m_n} - k_m \vec{v} \right) , \\
 \phi = \arctan & \left( \dfrac{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \gamma_{m_n, y}(x_{m_n, y} - \mu_y)}{k_{m, y} } }{\sum_{m=1}^{M} \dfrac{\sum_{n = 1}^{N_m} \gamma_{m_n, x} (x_{m_n, x} - \mu_x) }{k_{m, x}} }\right).
@@ -195,7 +195,7 @@ Whole map exploration is described in Algorithm \ref{alg:exploration}. The waypo
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.23]{fig/map_annotation.png}
+	\includegraphics[scale=0.25]{fig/map_annotation.png}
 	\caption[Generated waypoints]{Purple waypoints are places where the robot should stop and look around. Green circles are camera ranges from the corresponding place. In this figure, the waypoints are generated so that there is no unexplored area. That is usually not necessary since the objects of interest have non-negligible size. It is thus possible to further reduce the number of waypoints.}
 	\label{fig:map_annot}
 \end{figure}
@@ -265,7 +265,7 @@ When we use colors for the segmentation, it is crucial to choose the right color
 		\includegraphics[scale=0.18]{fig/colors_lidar}
 	\end{subfigure}
 	
-	\caption[Colored pointcloud detections]{Detection of bricks using color-based clustering. On the left: Image from a camera pointing at the built wall. Black dots are points captured by the lidar sensor. On the right: Final detection in map frame. All of the bricks are correctly detected, even though they are poorly painted, and the environment is challenging.}
+	\caption[Colored pointcloud detections]{Detection of bricks using color-based clustering. On the left: Image from a camera pointing at the built wall. Black dots are points captured by the lidar sensor. On the right: Final detection in map frame. All of the bricks are correctly detected, even though they are poorly painted, and the environment is very challenging.}
 	\label{fig:colors}
 \end{figure}
 
