@@ -91,18 +91,18 @@ A critical assumption for the convergence of the algorithm is that its likelihoo
 \end{align}
 
 \subsection{Expectation}
-The expectation step is done simply by evaluating the conditional probability of current parameters given the sample:
+The expectation step is done simply by evaluating the probability of the current sample being part of the model given the parameters:
 \begin{equation}
-\gamma_n = P(\mu, \sigma | x_n),
+\alpha_n = P(x_n | \mu, \sigma),
 \end{equation}
-which is calculated using the Bayes theorem and the law of total probability:
+when there are more classes $Z$, this is calculated using the Bayes theorem and the law of total probability:
 \begin{align}
-\gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{P(x_n)}, \nonumber \\
-\gamma_n &= \dfrac{P(x_n | \mu, \sigma) P(\mu, \sigma)}{\sum_{k = 1}^N P(x_k | \mu, \sigma) P(\mu, \sigma)}.
+\alpha_{n, z = k} &= \dfrac{P(x_n | z = k; \mu, \sigma) P(z=k)}{P(x_n)}, \nonumber \\
+\alpha_{n, z = k} &= \dfrac{P(x_n | z = k; \mu, \sigma) P(z=k)}{\sum_{j = 1}^Z P(x_n | z = j ; \mu, \sigma) P(z = j)}.
 \end{align}
-There is only one class so the priors can be evaluated $P(\mu, \sigma) = 1$ and the equation simplifies to final form:
+There is only one class in our case, so we need to obtain the probability of the current sample, and we finally can get the output of the expectation step:
 \begin{equation}
-\gamma_n = \dfrac{\mathcal{N}(x_n, \mu, \sigma) }{\sum_{k = 1}^N \mathcal{N}(x_k, \mu, \sigma) }.
+\gamma_n = \dfrac{\alpha_{n} }{\sum_{k = 1}^N \alpha_{k}  }.
 \end{equation}
 
 \subsection{Algorithm}
